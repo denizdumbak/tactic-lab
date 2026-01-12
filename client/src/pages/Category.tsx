@@ -10,7 +10,7 @@ const TITLES: Record<string, string> = {
 };
 
 const DESCRIPTIONS: Record<string, string> = {
-  "scout": "In-depth profiles of emerging talents and potential targets.",
+  "scout": "Potansiyel yetenekler ve transfer hedeflerine yönelik derinlemesine profil analizleri.",
   "taktik": "Breakdowns of systems, formations, and coaching philosophies.",
   "mac-analizi": "Detailed post-match reviews and key performance indicators."
 };
