@@ -4,7 +4,7 @@ export default function About() {
   return (
     <Layout>
       <div className="max-w-2xl mx-auto pt-10">
-        <h1 className="text-3xl md:text-4xl font-serif font-bold mb-8 text-primary">About</h1>
+        <h1 className="text-3xl md:text-4xl font-serif font-bold mb-8 text-primary">Hakkında</h1>
         
         <div className="prose prose-lg prose-gray font-serif prose-p:font-sans">
           <p>Futbol Analiz, kendi futbol yazılarımı ve analizlerimi yayımlamak amacıyla oluşturduğum kişisel bir platformdur. İlk çıkış noktası, çalışmalarımı bir portföy altında toplamak olsa da; zamanla oyuna benzer bir bakış açısıyla yaklaşan diğer yazarların katkılarına da açık bir yapı hedeflemektedir.</p>
