@@ -1,38 +1,56 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
 
-// modify the interface with any CRUD methods
-// you might need
+import { db } from "./db";
+import {
+  posts,
+  scoutProfiles,
+  type Post,
+  type InsertPost,
+  type ScoutProfile,
+  type InsertScoutProfile,
+  type CreatePostRequest,
+  type PostWithProfile
+} from "@shared/schema";
+import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getPosts(category?: string): Promise<Post[]>;
+  getPostBySlug(slug: string): Promise<PostWithProfile | undefined>;
+  createPost(post: CreatePostRequest): Promise<Post>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
+export class DatabaseStorage implements IStorage {
+  async getPosts(category?: string): Promise<Post[]> {
+    if (category) {
+      return await db.select().from(posts).where(eq(posts.category, category)).orderBy(desc(posts.createdAt));
+    }
+    return await db.select().from(posts).orderBy(desc(posts.createdAt));
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getPostBySlug(slug: string): Promise<PostWithProfile | undefined> {
+    const [post] = await db.select().from(posts).where(eq(posts.slug, slug));
+    
+    if (!post) return undefined;
+
+    // Fetch associated scout profile if exists
+    const [profile] = await db.select().from(scoutProfiles).where(eq(scoutProfiles.postId, post.id));
+
+    return { ...post, scoutProfile: profile };
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
-  }
+  async createPost(input: CreatePostRequest): Promise<Post> {
+    const { scoutProfile, ...postData } = input;
+    
+    const [post] = await db.insert(posts).values(postData).returning();
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+    if (scoutProfile) {
+      await db.insert(scoutProfiles).values({
+        ...scoutProfile,
+        postId: post.id
+      });
+    }
+
+    return post;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
