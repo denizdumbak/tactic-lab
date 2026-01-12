@@ -10,7 +10,7 @@ export default function About() {
           <p>Futbol Analiz, kendi futbol yazılarımı ve analizlerimi yayımlamak amacıyla oluşturduğum kişisel bir platformdur. İlk çıkış noktası, çalışmalarımı bir portföy altında toplamak olsa da; zamanla oyuna benzer bir bakış açısıyla yaklaşan diğer yazarların katkılarına da açık bir yapı hedeflemektedir.</p>
           <p>Bu platformdaki temel amacım, futbolu yalnızca skorlar ve sonuçlar üzerinden değil; taktiksel yapılar, teknik detaylar ve oyunu şekillendiren fikirler üzerinden incelemektir. Maç analizleri, taktik çözümlemeler ve kavramsal yazılar aracılığıyla futbol anlayışımı derinleştirmeyi ve analitik bakış açımı sürekli olarak geliştirmeyi amaçlıyorum.</p>
           
-          <h3 className="text-xl font-bold mt-8 mb-4">Contact</h3>
+          <h3 className="text-xl font-bold mt-8 mb-4">İletişim</h3>
           <p>
             For inquiries, scouting requests, or collaboration:
             <br />
