@@ -11,10 +11,7 @@ export default function About() {
             Futbol Analiz is an independent publication dedicated to the intellectual side of the beautiful game. 
             We believe that football is not just about results, but about the process, the systems, and the individual brilliance that shapes them.
           </p>
-          <p>
-            Founded in 2024, our mission is to provide clear, unbiased, and deep analysis without the noise of modern sports media.
-            No clickbait, no rumors, no sensory overload. Just football.
-          </p>
+          <p>Bu platformdaki temel amacım, futbolu yalnızca skorlar ve sonuçlar üzerinden değil; taktiksel yapılar, teknik detaylar ve oyunu şekillendiren fikirler üzerinden incelemektir. Maç analizleri, taktik çözümlemeler ve kavramsal yazılar aracılığıyla futbol anlayışımı derinleştirmeyi ve analitik bakış açımı sürekli olarak geliştirmeyi amaçlıyorum.</p>
           
           <h3 className="text-xl font-bold mt-8 mb-4">Contact</h3>
           <p>

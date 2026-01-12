@@ -8,7 +8,7 @@ export function Navigation() {
     { href: "/scout", label: "Scout" },
     { href: "/taktik", label: "Taktik" },
     { href: "/mac-analizi", label: "Maç Analizi" },
-    { href: "/about", label: "About" },
+    { href: "/about", label: "Hakkında" },
   ];
 
   return (
