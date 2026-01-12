@@ -35,7 +35,7 @@ export function PostPreview({ post }: PostPreviewProps) {
         href={`/post/${post.slug}`}
         className="inline-block mt-3 text-sm font-bold border-b-2 border-primary/10 hover:border-primary transition-colors pb-0.5"
       >
-        Read Analysis
+        Analizi Oku
       </Link>
     </article>
   );

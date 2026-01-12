@@ -5,14 +5,14 @@ import { usePosts } from "@/hooks/use-posts";
 
 const TITLES: Record<string, string> = {
   "scout": "Scouting Raporları",
-  "taktik": "Tactical Analysis",
-  "mac-analizi": "Match Analysis"
+  "taktik": "Taktik Analiz",
+  "mac-analizi": "Maç Analizi"
 };
 
 const DESCRIPTIONS: Record<string, string> = {
   "scout": "Potansiyel yetenekler ve transfer hedeflerine yönelik derinlemesine profil analizleri.",
-  "taktik": "Breakdowns of systems, formations, and coaching philosophies.",
-  "mac-analizi": "Detailed post-match reviews and key performance indicators."
+  "taktik": "Sistemlerin, dizilişlerin ve antrenör felsefelerinin ayrıntılı incelemeleri.",
+  "mac-analizi": "Detaylı maç sonu değerlendirmeleri ve anahtar performans göstergeleri."
 };
 
 export default function Category() {
@@ -48,7 +48,7 @@ export default function Category() {
         
         {posts?.length === 0 && (
           <div className="text-center py-20 text-muted-foreground">
-            No articles found in this category.
+            Bu kategoride henüz yazı bulunmamaktadır.
           </div>
         )}
       </div>

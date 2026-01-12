@@ -10,7 +10,7 @@ export default function Home() {
       {/* Manifesto */}
       <section className="mb-20 pt-8 pb-12 border-b border-border/40">
         <p className="text-lg md:text-xl font-serif leading-relaxed text-foreground/90 max-w-2xl mx-auto text-center italic">
-          "This is not a content website. It is a thinking space for football tactics, scouting, and match analysis. Design should disappear and let ideas speak."
+          "Bu bir içerik sitesi değildir. Futbol taktikleri, scouting ve maç analizi üzerine bir düşünce alanıdır. Tasarım kaybolmalı ve fikirler konuşmalıdır."
         </p>
       </section>
 
@@ -35,7 +35,7 @@ export default function Home() {
 
         {posts?.length === 0 && (
           <div className="text-center py-20 text-muted-foreground">
-            No articles published yet.
+            Henüz yayımlanmış bir yazı bulunmamaktadır.
           </div>
         )}
       </section>

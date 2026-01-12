@@ -30,8 +30,8 @@ export default function PostDetail() {
     return (
       <Layout>
         <div className="py-20 text-center">
-          <h2 className="text-2xl font-serif font-bold mb-4">Article not found</h2>
-          <Link href="/" className="text-primary underline">Return Home</Link>
+          <h2 className="text-2xl font-serif font-bold mb-4">Makale bulunamadı</h2>
+          <Link href="/" className="text-primary underline">Ana Sayfaya Dön</Link>
         </div>
       </Layout>
     );
@@ -42,7 +42,7 @@ export default function PostDetail() {
       <article className="max-w-2xl mx-auto pt-8 md:pt-12">
         <Link href="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-8 transition-colors group">
           <ArrowLeft className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" />
-          Back to list
+          Listeye dön
         </Link>
 
         <header className="mb-10 md:mb-14">
