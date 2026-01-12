@@ -12,7 +12,7 @@ export default function About() {
           
           <h3 className="text-xl font-bold mt-8 mb-4">İletişim</h3>
           <p>
-            For inquiries, scouting requests, or collaboration:
+            Futbol Analiz, benim için hem öğrenme sürecimin bir parçası hem de futbolun entelektüel ve taktik boyutlarına dair düşüncelerimi yansıttığım bir alan niteliğindedir. İletişim, scouting talepleri veya iş birliği için:
             <br />
             <a href="mailto:hello@futbolanaliz.com" className="text-primary hover:underline">hello@futbolanaliz.com</a>
           </p>
