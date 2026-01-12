@@ -4,7 +4,7 @@ import { PostPreview } from "@/components/PostPreview";
 import { usePosts } from "@/hooks/use-posts";
 
 const TITLES: Record<string, string> = {
-  "scout": "Scouting Reports",
+  "scout": "Scouting Raporları",
   "taktik": "Tactical Analysis",
   "mac-analizi": "Match Analysis"
 };
