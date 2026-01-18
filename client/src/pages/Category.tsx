@@ -2,23 +2,26 @@ import { useRoute } from "wouter";
 import { Layout } from "@/components/Layout";
 import { PostPreview } from "@/components/PostPreview";
 import { usePosts } from "@/hooks/use-posts";
-import { CATEGORY_TITLES, CATEGORY_DESCRIPTIONS } from "@/lib/constants";
+import { useLanguage } from "@/lib/language-context";
+import { getCategoryTitle, getCategoryDescription } from "@/lib/i18n";
 
 export default function Category() {
   const [match, params] = useRoute("/:category");
   const category = params?.category || "scout";
   const { data: posts, isLoading } = usePosts(category);
+  const { language } = useLanguage();
 
-  if (!CATEGORY_TITLES[category]) return null; // Or 404
+  const validCategories = ['scout', 'taktik', 'mac-analizi'];
+  if (!validCategories.includes(category)) return null;
 
   return (
     <Layout>
       <header className="mb-16 pt-8 border-b border-border/40 pb-8">
-        <h1 className="text-3xl md:text-4xl font-serif font-bold text-primary mb-4">
-          {CATEGORY_TITLES[category]}
+        <h1 className="text-3xl md:text-4xl font-serif font-bold text-primary mb-4" data-testid="text-category-title">
+          {getCategoryTitle(language, category)}
         </h1>
-        <p className="text-lg text-muted-foreground font-serif italic">
-          {CATEGORY_DESCRIPTIONS[category]}
+        <p className="text-lg text-muted-foreground font-serif italic" data-testid="text-category-description">
+          {getCategoryDescription(language, category)}
         </p>
       </header>
 
@@ -36,8 +39,8 @@ export default function Category() {
         )}
         
         {posts?.length === 0 && (
-          <div className="text-center py-20 text-muted-foreground">
-            Bu kategoride henüz yazı bulunmamaktadır.
+          <div className="text-center py-20 text-muted-foreground" data-testid="text-empty-state">
+            {language === 'tr' ? 'Bu kategoride henüz yazı bulunmamaktadır.' : 'No posts in this category yet.'}
           </div>
         )}
       </div>

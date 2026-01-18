@@ -3,7 +3,8 @@ import { usePost } from "@/hooks/use-posts";
 import { Layout } from "@/components/Layout";
 import { ScoutProfile } from "@/components/ScoutProfile";
 import { EditorRenderer } from "@/components/EditorRenderer";
-import { CATEGORY_LABELS } from "@/lib/constants";
+import { useLanguage } from "@/lib/language-context";
+import { getCategoryLabel } from "@/lib/i18n";
 import { format } from "date-fns";
 import { ArrowLeft } from "lucide-react";
 
@@ -11,6 +12,7 @@ export default function PostDetail() {
   const [, params] = useRoute("/post/:slug");
   const slug = params?.slug || "";
   const { data: post, isLoading, error } = usePost(slug);
+  const { t, language } = useLanguage();
 
   if (isLoading) {
     return (
@@ -32,8 +34,8 @@ export default function PostDetail() {
     return (
       <Layout>
         <div className="py-20 text-center">
-          <h2 className="text-2xl font-serif font-bold mb-4">Makale bulunamadı</h2>
-          <Link href="/" className="text-primary underline">Ana Sayfaya Dön</Link>
+          <h2 className="text-2xl font-serif font-bold mb-4" data-testid="text-not-found">{t('post.notFound')}</h2>
+          <Link href="/" className="text-primary underline" data-testid="link-back-home">{t('post.backToHome')}</Link>
         </div>
       </Layout>
     );
@@ -42,14 +44,14 @@ export default function PostDetail() {
   return (
     <Layout>
       <article className="max-w-2xl mx-auto pt-8 md:pt-12">
-        <Link href="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-8 transition-colors group">
+        <Link href="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-8 transition-colors group" data-testid="link-back-list">
           <ArrowLeft className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" />
-          Listeye dön
+          {t('post.backToList')}
         </Link>
 
         <header className="mb-10 md:mb-14">
           <div className="flex items-center space-x-3 text-sm font-medium tracking-wider mb-4">
-            <span className="text-primary uppercase">{CATEGORY_LABELS[post.category] || post.category}</span>
+            <span className="text-primary uppercase">{getCategoryLabel(language, post.category)}</span>
             <span className="text-muted-foreground/60">•</span>
             <span className="text-muted-foreground">
               {post.createdAt && format(new Date(post.createdAt), 'MMMM d, yyyy')}

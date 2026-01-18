@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { usePosts, useCreatePost, useUpdatePost, useDeletePost, usePostById } from "@/hooks/use-posts";
 import { type Post } from "@shared/schema";
-import { CATEGORY_LABELS } from "@/lib/constants";
+import { useLanguage } from "@/lib/language-context";
+import { getCategoryLabel } from "@/lib/i18n";
 import { Loader2, Plus, Edit, Trash2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,6 +40,7 @@ export default function AdminPanel() {
   
   const { data: posts, isLoading } = usePosts();
   const deletePost = useDeletePost();
+  const { t, language } = useLanguage();
 
   const handleEdit = (post: Post) => {
     setEditingPostId(post.id);
@@ -77,11 +79,11 @@ export default function AdminPanel() {
       <div className="max-w-6xl mx-auto px-6 py-12">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-serif font-bold text-primary">
-            İçerik Yönetimi
+            {t('admin.title')}
           </h1>
           <Button onClick={handleCreate} data-testid="button-create-post">
             <Plus className="w-4 h-4 mr-2" />
-            Yeni Yazı
+            {t('admin.newPost')}
           </Button>
         </div>
 
@@ -94,10 +96,10 @@ export default function AdminPanel() {
             <table className="w-full">
               <thead className="bg-muted/50">
                 <tr>
-                  <th className="text-left p-4 font-medium">Başlık</th>
-                  <th className="text-left p-4 font-medium">Kategori</th>
-                  <th className="text-left p-4 font-medium">Tarih</th>
-                  <th className="text-right p-4 font-medium">İşlemler</th>
+                  <th className="text-left p-4 font-medium">{t('admin.tableHeaders.title')}</th>
+                  <th className="text-left p-4 font-medium">{t('admin.tableHeaders.category')}</th>
+                  <th className="text-left p-4 font-medium">{t('admin.tableHeaders.date')}</th>
+                  <th className="text-right p-4 font-medium">{t('admin.tableHeaders.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -108,12 +110,12 @@ export default function AdminPanel() {
                     </td>
                     <td className="p-4">
                       <span className="text-sm text-muted-foreground">
-                        {CATEGORY_LABELS[post.category] || post.category}
+                        {getCategoryLabel(language, post.category)}
                       </span>
                     </td>
                     <td className="p-4">
                       <span className="text-sm text-muted-foreground">
-                        {post.createdAt && new Date(post.createdAt).toLocaleDateString('tr-TR')}
+                        {post.createdAt && new Date(post.createdAt).toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US')}
                       </span>
                     </td>
                     <td className="p-4 text-right">
@@ -141,7 +143,7 @@ export default function AdminPanel() {
                 {posts?.length === 0 && (
                   <tr>
                     <td colSpan={4} className="p-8 text-center text-muted-foreground">
-                      Henüz yazı bulunmuyor.
+                      {t('admin.emptyState')}
                     </td>
                   </tr>
                 )}
@@ -154,18 +156,18 @@ export default function AdminPanel() {
       <AlertDialog open={!!deletePostId} onOpenChange={() => setDeletePostId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Yazıyı Sil</AlertDialogTitle>
+            <AlertDialogTitle>{t('admin.deleteDialog.title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Bu yazıyı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+              {t('admin.deleteDialog.description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>İptal</AlertDialogCancel>
+            <AlertDialogCancel>{t('admin.deleteDialog.cancel')}</AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleDeleteConfirm}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Sil
+              {t('admin.deleteDialog.confirm')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -184,6 +186,7 @@ function PostEditor({ postId, onBack, isEdit }: PostEditorProps) {
   const editorRef = useRef<EditorJS | null>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
   const [isEditorReady, setIsEditorReady] = useState(false);
+  const { t, language } = useLanguage();
   
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
@@ -370,45 +373,45 @@ function PostEditor({ postId, onBack, isEdit }: PostEditorProps) {
           data-testid="button-back"
         >
           <ArrowLeft className="w-4 h-4" />
-          Geri Dön
+          {t('admin.editor.back')}
         </button>
 
         <h1 className="text-3xl font-serif font-bold text-primary mb-8">
-          {isEdit ? "Yazıyı Düzenle" : "Yeni Yazı Oluştur"}
+          {isEdit ? t('admin.editor.editTitle') : t('admin.editor.createTitle')}
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium mb-2">Başlık</label>
+            <label className="block text-sm font-medium mb-2">{t('admin.editor.titleLabel')}</label>
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Yazı başlığı"
+              placeholder={t('admin.editor.titlePlaceholder')}
               required
               data-testid="input-title"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Kategori</label>
+            <label className="block text-sm font-medium mb-2">{t('admin.editor.categoryLabel')}</label>
             <Select value={category} onValueChange={setCategory}>
               <SelectTrigger data-testid="select-category">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="scout">Scouting</SelectItem>
-                <SelectItem value="taktik">Taktik</SelectItem>
-                <SelectItem value="mac-analizi">Maç Analizi</SelectItem>
+                <SelectItem value="scout">{getCategoryLabel(language, 'scout')}</SelectItem>
+                <SelectItem value="taktik">{getCategoryLabel(language, 'taktik')}</SelectItem>
+                <SelectItem value="mac-analizi">{getCategoryLabel(language, 'mac-analizi')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Özet</label>
+            <label className="block text-sm font-medium mb-2">{t('admin.editor.summaryLabel')}</label>
             <Textarea
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
-              placeholder="Kısa bir özet yazın..."
+              placeholder={t('admin.editor.summaryPlaceholder')}
               rows={3}
               required
               data-testid="input-summary"
@@ -416,29 +419,29 @@ function PostEditor({ postId, onBack, isEdit }: PostEditorProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Kapak Görseli URL (Opsiyonel)</label>
+            <label className="block text-sm font-medium mb-2">{t('admin.editor.imageLabel')}</label>
             <Input
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="https://images.unsplash.com/..."
+              placeholder={t('admin.editor.imagePlaceholder')}
               data-testid="input-image-url"
             />
           </div>
 
           {category === 'scout' && (
             <div className="p-6 bg-muted/50 rounded-md space-y-4">
-              <h3 className="font-serif font-bold text-lg">Oyuncu Profili</h3>
+              <h3 className="font-serif font-bold text-lg">{t('admin.editor.scoutProfile')}</h3>
               <div className="grid grid-cols-2 gap-4">
                 <Input
                   value={playerName}
                   onChange={(e) => setPlayerName(e.target.value)}
-                  placeholder="Oyuncu Adı"
+                  placeholder={t('admin.editor.playerName')}
                   data-testid="input-player-name"
                 />
                 <Input
                   value={age}
                   onChange={(e) => setAge(e.target.value)}
-                  placeholder="Yaş"
+                  placeholder={t('admin.editor.playerAge')}
                   type="number"
                   data-testid="input-player-age"
                 />
@@ -447,33 +450,33 @@ function PostEditor({ postId, onBack, isEdit }: PostEditorProps) {
                 <Input
                   value={position}
                   onChange={(e) => setPosition(e.target.value)}
-                  placeholder="Pozisyon"
+                  placeholder={t('admin.editor.playerPosition')}
                   data-testid="input-player-position"
                 />
                 <Input
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
-                  placeholder="Rol"
+                  placeholder={t('admin.editor.playerRole')}
                   data-testid="input-player-role"
                 />
               </div>
               <Input
                 value={strengths}
                 onChange={(e) => setStrengths(e.target.value)}
-                placeholder="Güçlü Yönler (virgülle ayırın)"
+                placeholder={t('admin.editor.playerStrengths')}
                 data-testid="input-player-strengths"
               />
               <Input
                 value={risks}
                 onChange={(e) => setRisks(e.target.value)}
-                placeholder="Riskler (virgülle ayırın)"
+                placeholder={t('admin.editor.playerRisks')}
                 data-testid="input-player-risks"
               />
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium mb-2">İçerik</label>
+            <label className="block text-sm font-medium mb-2">{t('admin.editor.contentLabel')}</label>
             <div 
               ref={editorContainerRef}
               className="min-h-[400px] border rounded-md p-4 bg-background prose prose-sm max-w-none"
@@ -491,9 +494,9 @@ function PostEditor({ postId, onBack, isEdit }: PostEditorProps) {
               {isPending ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                  Kaydediliyor...
+                  {t('admin.editor.saving')}
                 </>
-              ) : isEdit ? "Güncelle" : "Yayınla"}
+              ) : isEdit ? t('admin.editor.update') : t('admin.editor.publish')}
             </Button>
             <Button 
               type="button" 
@@ -501,7 +504,7 @@ function PostEditor({ postId, onBack, isEdit }: PostEditorProps) {
               onClick={onBack}
               className="w-full md:w-auto"
             >
-              İptal
+              {t('admin.deleteDialog.cancel')}
             </Button>
           </div>
         </form>

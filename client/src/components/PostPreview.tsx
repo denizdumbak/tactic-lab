@@ -2,7 +2,9 @@ import { Link } from "wouter";
 import { format } from "date-fns";
 import { type Post } from "@shared/schema";
 import { cn } from "@/lib/utils";
-import { getCategoryLabel, getPlaceholderImage } from "@/lib/constants";
+import { getPlaceholderImage } from "@/lib/constants";
+import { useLanguage } from "@/lib/language-context";
+import { getCategoryLabel } from "@/lib/i18n";
 
 interface PostPreviewProps {
   post: Post;
@@ -10,6 +12,7 @@ interface PostPreviewProps {
 
 export function PostPreview({ post }: PostPreviewProps) {
   const imageUrl = post.imageUrl || getPlaceholderImage(post.category);
+  const { t, language } = useLanguage();
 
   return (
     <article className="group mb-12 last:mb-0">
@@ -26,7 +29,7 @@ export function PostPreview({ post }: PostPreviewProps) {
 
       <div className="flex items-baseline space-x-3 text-xs md:text-sm font-medium tracking-wider mb-2">
         <span className="text-primary tracking-wider" data-testid={`text-category-${post.id}`}>
-          {getCategoryLabel(post.category)}
+          {getCategoryLabel(language, post.category)}
         </span>
         <span className="text-muted-foreground/60">•</span>
         <span className="text-muted-foreground">
@@ -52,7 +55,7 @@ export function PostPreview({ post }: PostPreviewProps) {
         className="inline-block mt-3 text-sm font-bold border-b-2 border-primary/10 hover:border-primary transition-colors pb-0.5"
         data-testid={`link-read-${post.id}`}
       >
-        Analizi Oku
+        {t('post.readAnalysis')}
       </Link>
     </article>
   );

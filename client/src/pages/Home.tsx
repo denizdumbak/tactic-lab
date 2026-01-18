@@ -1,21 +1,20 @@
 import { Layout } from "@/components/Layout";
 import { PostPreview } from "@/components/PostPreview";
 import { usePosts } from "@/hooks/use-posts";
+import { useLanguage } from "@/lib/language-context";
 
 export default function Home() {
   const { data: posts, isLoading } = usePosts();
+  const { t, language } = useLanguage();
 
   return (
     <Layout>
-      {/* Manifesto */}
       <section className="mb-20 pt-8 pb-12 border-b border-border/40">
-        <p className="text-lg md:text-xl font-serif leading-relaxed text-foreground/90 max-w-2xl mx-auto text-center italic">
-          Skorun ötesinde, oyunun kalbinde. <br />
-          Her maçın hikayesini, her oyuncunun potansiyelini keşfedin.
+        <p className="text-lg md:text-xl font-serif leading-relaxed text-foreground/90 max-w-2xl mx-auto text-center italic" data-testid="text-manifesto">
+          {t('home.manifesto')}
         </p>
       </section>
 
-      {/* Latest Articles */}
       <section className="max-w-2xl mx-auto">
         {isLoading ? (
           <div className="space-y-12 animate-pulse">
@@ -33,8 +32,8 @@ export default function Home() {
         )}
 
         {posts?.length === 0 && (
-          <div className="text-center py-20 text-muted-foreground">
-            Henüz yayımlanmış bir yazı bulunmamaktadır.
+          <div className="text-center py-20 text-muted-foreground" data-testid="text-empty-state">
+            {language === 'tr' ? 'Henüz yayımlanmış bir yazı bulunmamaktadır.' : 'No posts published yet.'}
           </div>
         )}
       </section>
