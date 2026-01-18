@@ -56,12 +56,23 @@ shared/              # Shared code between frontend/backend
   routes.ts          # API route definitions with Zod schemas
 ```
 
+### Bilingual System
+- **Translation Files**: `client/src/lib/i18n.ts` contains all UI text in Turkish (tr) and English (en)
+- **Language Context**: `client/src/lib/language-context.tsx` provides LanguageProvider and useLanguage hook
+- **Language Toggle**: TR/EN buttons in header via `client/src/components/LanguageToggle.tsx`
+- **Persistence**: Language preference stored in localStorage with key 'tactic-lab-language'
+- **Detection**: Browser locale detection on first visit, defaults to Turkish
+- **Translation Access**: Use `t('key.subkey')` function from useLanguage hook
+- **Category Labels**: Language-aware helpers (getCategoryLabel, getCategoryTitle, getCategoryDescription) in `lib/constants.ts`
+- **Note**: Only UI text is translated; post content remains single-language
+
 ### Key Design Decisions
 
 1. **Hidden Admin Route**: Admin panel is at `/studio-x7k9m` (non-guessable) with no public links
 2. **Category Slug Mapping**: Categories stored as ASCII slugs, displayed with proper Turkish characters via mapping in `lib/constants.ts`
 3. **Featured Images**: Posts without imageUrl fall back to category-specific placeholder images
 4. **Shared Types**: TypeScript types derived from Drizzle schemas ensure frontend/backend type safety
+5. **Bilingual UI**: All UI text uses translation keys via centralized i18n system, while post content stays single-language
 
 ## External Dependencies
 
