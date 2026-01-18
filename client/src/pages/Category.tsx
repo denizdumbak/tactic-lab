@@ -2,34 +2,23 @@ import { useRoute } from "wouter";
 import { Layout } from "@/components/Layout";
 import { PostPreview } from "@/components/PostPreview";
 import { usePosts } from "@/hooks/use-posts";
-
-const TITLES: Record<string, string> = {
-  "scout": "Scouting Raporları",
-  "taktik": "Taktik Analiz",
-  "mac-analizi": "Maç Analizi"
-};
-
-const DESCRIPTIONS: Record<string, string> = {
-  "scout": "Potansiyel yetenekler ve transfer hedeflerine yönelik derinlemesine profil analizleri.",
-  "taktik": "Sistemlerin, dizilişlerin ve antrenör felsefelerinin ayrıntılı incelemeleri.",
-  "mac-analizi": "Detaylı maç sonu değerlendirmeleri ve kilit performans göstergeleri."
-};
+import { CATEGORY_TITLES, CATEGORY_DESCRIPTIONS } from "@/lib/constants";
 
 export default function Category() {
   const [match, params] = useRoute("/:category");
   const category = params?.category || "scout";
   const { data: posts, isLoading } = usePosts(category);
 
-  if (!TITLES[category]) return null; // Or 404
+  if (!CATEGORY_TITLES[category]) return null; // Or 404
 
   return (
     <Layout>
       <header className="mb-16 pt-8 border-b border-border/40 pb-8">
         <h1 className="text-3xl md:text-4xl font-serif font-bold text-primary mb-4">
-          {TITLES[category]}
+          {CATEGORY_TITLES[category]}
         </h1>
         <p className="text-lg text-muted-foreground font-serif italic">
-          {DESCRIPTIONS[category]}
+          {CATEGORY_DESCRIPTIONS[category]}
         </p>
       </header>
 
