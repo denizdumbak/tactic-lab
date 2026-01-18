@@ -10,7 +10,6 @@ export function ScoutProfile({ profile }: ScoutProfileProps) {
       <h3 className="font-serif text-xl font-bold mb-6 text-primary border-b border-primary/20 pb-2">
         Scout Profili
       </h3>
-      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
         <div>
           <span className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">İsim</span>
@@ -28,12 +27,10 @@ export function ScoutProfile({ profile }: ScoutProfileProps) {
           </div>
         </div>
       </div>
-
       <div className="mb-6">
         <span className="block text-xs uppercase tracking-wider text-muted-foreground mb-1">Rol</span>
         <p className="text-base">{profile.role}</p>
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 pt-6 border-t border-primary/10">
         <div>
           <h4 className="font-serif font-bold mb-3 text-primary">Güçlü Yönler</h4>
@@ -48,7 +45,7 @@ export function ScoutProfile({ profile }: ScoutProfileProps) {
         </div>
         
         <div>
-          <h4 className="font-serif font-bold mb-3 text-muted-foreground">Riskler / Zayıf Yönler</h4>
+          <h4 className="font-serif font-bold mb-3 text-muted-foreground">Zayıf Yönler</h4>
           <ul className="space-y-2">
             {profile.risks.map((r, i) => (
               <li key={i} className="flex items-start text-sm text-muted-foreground">
