@@ -204,6 +204,8 @@ function PostEditor({ postId, onBack, isEdit }: PostEditorProps) {
   const createPost = useCreatePost();
   const updatePost = useUpdatePost();
 
+  const editorPlaceholder = t('admin.editor.editorPlaceholder');
+  
   const initializeEditor = useCallback((initialData?: any) => {
     if (editorRef.current) {
       editorRef.current.destroy();
@@ -214,7 +216,7 @@ function PostEditor({ postId, onBack, isEdit }: PostEditorProps) {
 
     const editor = new EditorJS({
       holder: editorContainerRef.current,
-      placeholder: "Yazınızı buraya yazın...",
+      placeholder: editorPlaceholder,
       data: initialData,
       tools: {
         header: {
@@ -273,7 +275,7 @@ function PostEditor({ postId, onBack, isEdit }: PostEditorProps) {
     });
 
     editorRef.current = editor;
-  }, []);
+  }, [editorPlaceholder]);
 
   useEffect(() => {
     if (isEdit && existingPost) {

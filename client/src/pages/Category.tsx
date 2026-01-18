@@ -9,7 +9,7 @@ export default function Category() {
   const [match, params] = useRoute("/:category");
   const category = params?.category || "scout";
   const { data: posts, isLoading } = usePosts(category);
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
 
   const validCategories = ['scout', 'taktik', 'mac-analizi'];
   if (!validCategories.includes(category)) return null;
@@ -40,7 +40,7 @@ export default function Category() {
         
         {posts?.length === 0 && (
           <div className="text-center py-20 text-muted-foreground" data-testid="text-empty-state">
-            {language === 'tr' ? 'Bu kategoride henüz yazı bulunmamaktadır.' : 'No posts in this category yet.'}
+            {t('category.emptyState')}
           </div>
         )}
       </div>

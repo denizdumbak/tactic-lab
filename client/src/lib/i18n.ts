@@ -10,6 +10,7 @@ export const translations = {
     },
     home: {
       manifesto: 'Skorun ötesinde, oyunun kalbinde. Her maçın hikayesini, her oyuncunun potansiyelini keşfedin.',
+      emptyState: 'Henüz yayımlanmış bir yazı bulunmamaktadır.',
     },
     category: {
       scoutTitle: 'Scouting Raporları',
@@ -23,12 +24,14 @@ export const translations = {
         taktik: 'TAKTİK',
         macAnalizi: 'MAÇ ANALİZİ',
       },
+      emptyState: 'Bu kategoride henüz yazı bulunmamaktadır.',
     },
     post: {
       backToList: 'Listeye dön',
       notFound: 'Makale bulunamadı',
       backToHome: 'Ana Sayfaya Dön',
       readAnalysis: 'Analizi Oku',
+      imageSource: 'Görsel kaynağı: Unsplash',
     },
     scout: {
       title: 'Scout Profili',
@@ -41,8 +44,10 @@ export const translations = {
     },
     about: {
       title: 'Hakkında',
-      content: 'Tactic Lab, profesyonel ve amatör futbolu taktiksel bir bakış açısıyla inceleyen bağımsız bir futbol analiz platformudur. Analiz perspektifi: Her maçı ve oyuncuyu sayıların ötesinde, stratejik ve teknik detaylarla değerlendiriyoruz. Bağımsız ve tarafsız: Herhangi bir kulüp, federasyon veya medya kuruluşuyla bağlantımız bulunmuyor. Taktik odaklı: Odak noktamız gol istatistikleri değil, oyun içi dinamikler, baskı kalıpları ve alan kontrolüdür.',
+      paragraph1: 'Tactic Lab, kendi futbol yazılarımı ve analizlerimi yayımlamak amacıyla oluşturduğum kişisel bir platformdur. İlk çıkış noktası, çalışmalarımı bir portföy altında toplamak olsa da; zamanla oyuna benzer bir bakış açısıyla yaklaşan diğer yazarların katkılarına da açık bir yapı hedeflemektedir.',
+      paragraph2: 'Bu platformdaki temel amacım, futbolu yalnızca skorlar ve sonuçlar üzerinden değil; taktiksel yapılar, teknik detaylar ve oyunu şekillendiren fikirler üzerinden incelemektir. Maç analizleri, taktik çözümlemeler ve kavramsal yazılar aracılığıyla futbol anlayışımı derinleştirmeyi ve analitik bakış açımı sürekli olarak geliştirmeyi amaçlıyorum.',
       contact: 'İletişim',
+      contactIntro: 'Tactic Lab, benim için hem öğrenme sürecimin bir parçası hem de futbolun entelektüel ve taktik boyutlarına dair düşüncelerimi yansıttığım bir alan niteliğindedir. İletişim, scouting talepleri veya iş birliği için:',
     },
     footer: {
       copyright: '© {year} Tactic Lab. Tüm hakları saklıdır.',
@@ -86,6 +91,7 @@ export const translations = {
         update: 'Güncelle',
         publish: 'Yayınla',
         back: 'Geri Dön',
+        editorPlaceholder: 'Yazınızı buraya yazın...',
       },
     },
   },
@@ -98,6 +104,7 @@ export const translations = {
     },
     home: {
       manifesto: 'Beyond the score, at the heart of the game. Discover the story of every match, the potential of every player.',
+      emptyState: 'No posts published yet.',
     },
     category: {
       scoutTitle: 'Scouting Reports',
@@ -111,12 +118,14 @@ export const translations = {
         taktik: 'TACTICS',
         macAnalizi: 'MATCH ANALYSIS',
       },
+      emptyState: 'No posts in this category yet.',
     },
     post: {
       backToList: 'Back to list',
       notFound: 'Article not found',
       backToHome: 'Back to Home',
       readAnalysis: 'Read Analysis',
+      imageSource: 'Image source: Unsplash',
     },
     scout: {
       title: 'Scout Profile',
@@ -129,8 +138,10 @@ export const translations = {
     },
     about: {
       title: 'About',
-      content: 'Tactic Lab is an independent football analysis platform that examines professional and amateur football from a tactical perspective. Analysis perspective: We evaluate every match and player beyond the numbers, with strategic and technical details. Independent and unbiased: We have no affiliation with any club, federation, or media organization. Tactics-focused: Our focus is in-game dynamics, pressing patterns, and space control, not goal statistics.',
+      paragraph1: 'Tactic Lab is a personal platform I created to publish my own football articles and analyses. While its initial purpose was to gather my work under a portfolio, over time it aims to become a structure open to contributions from other writers who share a similar perspective on the game.',
+      paragraph2: 'My main goal on this platform is to examine football not only through scores and results, but through tactical structures, technical details, and the ideas that shape the game. Through match analyses, tactical breakdowns, and conceptual articles, I aim to deepen my understanding of football and continuously develop my analytical perspective.',
       contact: 'Contact',
+      contactIntro: 'Tactic Lab is both part of my learning journey and a space where I reflect my thoughts on the intellectual and tactical dimensions of football. For contact, scouting requests, or collaboration:',
     },
     footer: {
       copyright: '© {year} Tactic Lab. All rights reserved.',
@@ -174,6 +185,7 @@ export const translations = {
         update: 'Update',
         publish: 'Publish',
         back: 'Go Back',
+        editorPlaceholder: 'Write your content here...',
       },
     },
   },

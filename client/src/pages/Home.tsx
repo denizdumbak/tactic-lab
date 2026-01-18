@@ -5,7 +5,7 @@ import { useLanguage } from "@/lib/language-context";
 
 export default function Home() {
   const { data: posts, isLoading } = usePosts();
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
 
   return (
     <Layout>
@@ -33,7 +33,7 @@ export default function Home() {
 
         {posts?.length === 0 && (
           <div className="text-center py-20 text-muted-foreground" data-testid="text-empty-state">
-            {language === 'tr' ? 'Henüz yayımlanmış bir yazı bulunmamaktadır.' : 'No posts published yet.'}
+            {t('home.emptyState')}
           </div>
         )}
       </section>

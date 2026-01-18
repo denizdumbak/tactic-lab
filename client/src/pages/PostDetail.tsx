@@ -77,7 +77,7 @@ export default function PostDetail() {
               className="w-full h-auto bg-gray-100" 
             />
             <p className="mt-2 text-xs text-center text-muted-foreground/60 italic">
-              Image source: Unsplash
+              {t('post.imageSource')}
             </p>
           </div>
         )}
