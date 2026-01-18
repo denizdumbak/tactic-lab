@@ -2,6 +2,8 @@ import { useRoute, Link } from "wouter";
 import { usePost } from "@/hooks/use-posts";
 import { Layout } from "@/components/Layout";
 import { ScoutProfile } from "@/components/ScoutProfile";
+import { EditorRenderer } from "@/components/EditorRenderer";
+import { CATEGORY_LABELS } from "@/lib/constants";
 import { format } from "date-fns";
 import { ArrowLeft } from "lucide-react";
 
@@ -47,7 +49,7 @@ export default function PostDetail() {
 
         <header className="mb-10 md:mb-14">
           <div className="flex items-center space-x-3 text-sm font-medium tracking-wider mb-4">
-            <span className="text-primary uppercase">{post.category.replace('-', ' ')}</span>
+            <span className="text-primary uppercase">{CATEGORY_LABELS[post.category] || post.category}</span>
             <span className="text-muted-foreground/60">•</span>
             <span className="text-muted-foreground">
               {post.createdAt && format(new Date(post.createdAt), 'MMMM d, yyyy')}
@@ -80,10 +82,8 @@ export default function PostDetail() {
 
         {post.scoutProfile && <ScoutProfile profile={post.scoutProfile} />}
 
-        <div className="prose prose-lg prose-gray font-serif prose-headings:font-serif prose-headings:font-bold prose-headings:text-primary prose-p:font-sans prose-p:text-foreground/90 max-w-none mb-20">
-          {post.content.split('\n').map((paragraph, idx) => (
-            paragraph.trim() ? <p key={idx}>{paragraph}</p> : <br key={idx} />
-          ))}
+        <div className="prose prose-lg prose-stone max-w-none mb-20 prose-headings:font-serif prose-headings:font-bold prose-headings:text-primary prose-p:text-foreground/90 prose-p:leading-relaxed prose-blockquote:border-l-primary prose-blockquote:text-muted-foreground prose-blockquote:italic prose-img:rounded-sm prose-figcaption:text-center prose-figcaption:text-sm">
+          <EditorRenderer content={post.content} />
         </div>
       </article>
     </Layout>

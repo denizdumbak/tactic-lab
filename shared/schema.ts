@@ -4,12 +4,24 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // === TABLE DEFINITIONS ===
+export interface EditorJSBlock {
+  id?: string;
+  type: string;
+  data: Record<string, any>;
+}
+
+export interface EditorJSContent {
+  time?: number;
+  blocks: EditorJSBlock[];
+  version?: string;
+}
+
 export const posts = pgTable("posts", {
   id: serial("id").primaryKey(),
   slug: text("slug").notNull().unique(),
   title: text("title").notNull(),
   summary: text("summary").notNull(),
-  content: text("content").notNull(),
+  content: jsonb("content").$type<EditorJSContent>().notNull(),
   category: text("category").notNull(), // 'scout', 'taktik', 'mac-analizi'
   imageUrl: text("image_url"),
   createdAt: timestamp("created_at").defaultNow(),

@@ -288,8 +288,8 @@ function PostEditor({ postId, onBack, isEdit }: PostEditorProps) {
         setRisks(existingPost.scoutProfile.risks.join(", "));
       }
 
-      const initialData = existingPost.content ? parseContentToEditorData(existingPost.content) : undefined;
-      initializeEditor(initialData);
+      const contentData = existingPost.content as { blocks: any[] } | null;
+      initializeEditor(contentData || undefined);
     } else if (!isEdit) {
       initializeEditor();
     }
@@ -302,101 +302,15 @@ function PostEditor({ postId, onBack, isEdit }: PostEditorProps) {
     };
   }, [isEdit, existingPost, initializeEditor]);
 
-  const parseContentToEditorData = (content: string) => {
-    const blocks: any[] = [];
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = content;
-    
-    tempDiv.childNodes.forEach((node) => {
-      if (node.nodeType === Node.ELEMENT_NODE) {
-        const element = node as HTMLElement;
-        const tagName = element.tagName.toLowerCase();
-        
-        if (tagName === 'p') {
-          blocks.push({
-            type: 'paragraph',
-            data: { text: element.innerHTML }
-          });
-        } else if (tagName.match(/^h[2-4]$/)) {
-          blocks.push({
-            type: 'header',
-            data: { 
-              text: element.innerHTML,
-              level: parseInt(tagName.charAt(1))
-            }
-          });
-        } else if (tagName === 'blockquote') {
-          blocks.push({
-            type: 'quote',
-            data: { text: element.innerHTML }
-          });
-        } else if (tagName === 'ul' || tagName === 'ol') {
-          const items = Array.from(element.querySelectorAll('li')).map(li => li.innerHTML);
-          blocks.push({
-            type: 'list',
-            data: { 
-              style: tagName === 'ol' ? 'ordered' : 'unordered',
-              items 
-            }
-          });
-        } else if (tagName === 'img') {
-          blocks.push({
-            type: 'image',
-            data: { 
-              file: { url: element.getAttribute('src') },
-              caption: element.getAttribute('alt') || ''
-            }
-          });
-        }
-      } else if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) {
-        blocks.push({
-          type: 'paragraph',
-          data: { text: node.textContent.trim() }
-        });
-      }
-    });
-
-    return blocks.length > 0 ? { blocks } : undefined;
-  };
-
-  const editorDataToHtml = async () => {
-    if (!editorRef.current) return "";
-    
-    const data = await editorRef.current.save();
-    let html = "";
-    
-    data.blocks.forEach((block: any) => {
-      switch (block.type) {
-        case 'paragraph':
-          html += `<p>${block.data.text}</p>\n`;
-          break;
-        case 'header':
-          html += `<h${block.data.level}>${block.data.text}</h${block.data.level}>\n`;
-          break;
-        case 'quote':
-          html += `<blockquote>${block.data.text}</blockquote>\n`;
-          break;
-        case 'list':
-          const listTag = block.data.style === 'ordered' ? 'ol' : 'ul';
-          const items = block.data.items.map((item: string) => `<li>${item}</li>`).join('');
-          html += `<${listTag}>${items}</${listTag}>\n`;
-          break;
-        case 'image':
-          const imgUrl = block.data.file?.url || block.data.url;
-          if (imgUrl) {
-            html += `<img src="${imgUrl}" alt="${block.data.caption || ''}" style="max-width: 100%; height: auto;" />\n`;
-          }
-          break;
-      }
-    });
-    
-    return html;
+  const getEditorContent = async () => {
+    if (!editorRef.current) return { blocks: [] };
+    return await editorRef.current.save();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const content = await editorDataToHtml();
+    const content = await getEditorContent();
     const slug = title.toLowerCase()
       .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
       .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
