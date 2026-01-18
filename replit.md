@@ -27,9 +27,18 @@ Preferred communication style: Simple, everyday language.
 ### Data Layer
 - **Database**: PostgreSQL with Drizzle ORM
 - **Schema Location**: `shared/schema.ts` contains all table definitions
+- **Content Storage**: JSONB format for Editor.js structured content
 - **Key Tables**:
-  - `posts`: Blog posts with slug, title, summary, content, category, imageUrl
+  - `posts`: Blog posts with slug, title, summary, content (JSONB), category, imageUrl
   - `scoutProfiles`: Player scouting data linked to posts (playerName, age, position, strengths, risks)
+
+### Content Rendering
+- **EditorRenderer Component**: Located at `client/src/components/EditorRenderer.tsx`
+- **Sanitization**: DOMPurify with strict whitelist (b, i, u, strong, em, a, br, mark, code)
+- **HTML Parsing**: html-react-parser for safe React element conversion
+- **Link Security**: Only http/https/mailto protocols allowed, automatic rel="noopener noreferrer"
+- **Supported Blocks**: paragraph, header (h2-h4), quote, list (ordered/unordered), image with captions
+- **Typography**: Tailwind Typography prose classes for enhanced reading experience
 
 ### Project Structure
 ```
