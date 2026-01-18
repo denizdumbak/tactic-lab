@@ -47,9 +47,14 @@ export class DatabaseStorage implements IStorage {
 
     if (scoutProfile) {
       await db.insert(scoutProfiles).values({
-        ...scoutProfile,
+        playerName: scoutProfile.playerName,
+        age: scoutProfile.age,
+        position: scoutProfile.position,
+        role: scoutProfile.role,
+        strengths: scoutProfile.strengths,
+        risks: scoutProfile.risks,
         postId: post.id
-      });
+      } as typeof scoutProfiles.$inferInsert);
     }
 
     return post;
@@ -78,9 +83,14 @@ export class DatabaseStorage implements IStorage {
     if (scoutProfile) {
       await db.delete(scoutProfiles).where(eq(scoutProfiles.postId, id));
       await db.insert(scoutProfiles).values({
-        ...scoutProfile,
+        playerName: scoutProfile.playerName,
+        age: scoutProfile.age,
+        position: scoutProfile.position,
+        role: scoutProfile.role,
+        strengths: scoutProfile.strengths,
+        risks: scoutProfile.risks,
         postId: post.id
-      });
+      } as typeof scoutProfiles.$inferInsert);
     }
 
     return post;
