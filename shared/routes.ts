@@ -41,6 +41,14 @@ export const api = {
         404: errorSchemas.notFound,
       },
     },
+    getById: {
+      method: 'GET' as const,
+      path: '/api/posts/id/:id',
+      responses: {
+        200: z.custom<typeof posts.$inferSelect & { scoutProfile?: typeof scoutProfiles.$inferSelect }>(),
+        404: errorSchemas.notFound,
+      },
+    },
     create: {
       method: 'POST' as const,
       path: '/api/posts',
@@ -48,6 +56,24 @@ export const api = {
       responses: {
         201: z.custom<typeof posts.$inferSelect>(),
         400: errorSchemas.validation,
+      },
+    },
+    update: {
+      method: 'PUT' as const,
+      path: '/api/posts/:id',
+      input: createPostWithProfileSchema.partial(),
+      responses: {
+        200: z.custom<typeof posts.$inferSelect>(),
+        404: errorSchemas.notFound,
+        400: errorSchemas.validation,
+      },
+    },
+    delete: {
+      method: 'DELETE' as const,
+      path: '/api/posts/:id',
+      responses: {
+        200: z.object({ success: z.boolean() }),
+        404: errorSchemas.notFound,
       },
     },
   },

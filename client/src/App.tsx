@@ -7,7 +7,7 @@ import Home from "@/pages/Home";
 import PostDetail from "@/pages/PostDetail";
 import Category from "@/pages/Category";
 import About from "@/pages/About";
-import Write from "@/pages/Write";
+import AdminPanel from "@/pages/AdminPanel";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -15,7 +15,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/about" component={About} />
-      <Route path="/write" component={Write} />
+      <Route path="/studio-x7k9m" component={AdminPanel} />
       <Route path="/post/:slug" component={PostDetail} />
       <Route path="/scout" component={Category} />
       <Route path="/taktik" component={Category} />

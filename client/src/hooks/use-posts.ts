@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, buildUrl, type PostInput } from "@shared/routes";
 import { useToast } from "@/hooks/use-toast";
+import { type PostWithProfile } from "@shared/schema";
 
-// Fetch all posts, optionally filtered by category
 export function usePosts(category?: string) {
   return useQuery({
     queryKey: [api.posts.list.path, category],
@@ -18,7 +18,6 @@ export function usePosts(category?: string) {
   });
 }
 
-// Fetch a single post by slug
 export function usePost(slug: string) {
   return useQuery({
     queryKey: [api.posts.get.path, slug],
@@ -32,7 +31,20 @@ export function usePost(slug: string) {
   });
 }
 
-// Create a new post
+export function usePostById(id: number | null) {
+  return useQuery({
+    queryKey: ['/api/posts/id', id],
+    queryFn: async () => {
+      if (!id) return null;
+      const res = await fetch(`/api/posts/id/${id}`);
+      if (res.status === 404) return null;
+      if (!res.ok) throw new Error("Failed to fetch post");
+      return await res.json() as PostWithProfile;
+    },
+    enabled: !!id,
+  });
+}
+
 export function useCreatePost() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -57,13 +69,83 @@ export function useCreatePost() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [api.posts.list.path] });
       toast({
-        title: "Success",
-        description: "Article published successfully.",
+        title: "Başarılı",
+        description: "Makale yayınlandı.",
       });
     },
     onError: (error) => {
       toast({
-        title: "Error",
+        title: "Hata",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+}
+
+export function useUpdatePost() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: Partial<PostInput> }) => {
+      const res = await fetch(`/api/posts/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) {
+        if (res.status === 400) {
+          const error = await res.json();
+          throw new Error(error.message || "Validation failed");
+        }
+        throw new Error("Failed to update post");
+      }
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [api.posts.list.path] });
+      toast({
+        title: "Başarılı",
+        description: "Makale güncellendi.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Hata",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+}
+
+export function useDeletePost() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const res = await fetch(`/api/posts/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to delete post");
+      }
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [api.posts.list.path] });
+      toast({
+        title: "Başarılı",
+        description: "Makale silindi.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Hata",
         description: error.message,
         variant: "destructive",
       });

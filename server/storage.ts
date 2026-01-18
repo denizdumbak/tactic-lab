@@ -15,7 +15,10 @@ import { eq, desc } from "drizzle-orm";
 export interface IStorage {
   getPosts(category?: string): Promise<Post[]>;
   getPostBySlug(slug: string): Promise<PostWithProfile | undefined>;
+  getPostById(id: number): Promise<PostWithProfile | undefined>;
   createPost(post: CreatePostRequest): Promise<Post>;
+  updatePost(id: number, post: Partial<CreatePostRequest>): Promise<Post | undefined>;
+  deletePost(id: number): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -50,6 +53,43 @@ export class DatabaseStorage implements IStorage {
     }
 
     return post;
+  }
+
+  async getPostById(id: number): Promise<PostWithProfile | undefined> {
+    const [post] = await db.select().from(posts).where(eq(posts.id, id));
+    
+    if (!post) return undefined;
+
+    const [profile] = await db.select().from(scoutProfiles).where(eq(scoutProfiles.postId, post.id));
+
+    return { ...post, scoutProfile: profile };
+  }
+
+  async updatePost(id: number, input: Partial<CreatePostRequest>): Promise<Post | undefined> {
+    const { scoutProfile, ...postData } = input;
+    
+    const [post] = await db.update(posts)
+      .set(postData)
+      .where(eq(posts.id, id))
+      .returning();
+
+    if (!post) return undefined;
+
+    if (scoutProfile) {
+      await db.delete(scoutProfiles).where(eq(scoutProfiles.postId, id));
+      await db.insert(scoutProfiles).values({
+        ...scoutProfile,
+        postId: post.id
+      });
+    }
+
+    return post;
+  }
+
+  async deletePost(id: number): Promise<boolean> {
+    await db.delete(scoutProfiles).where(eq(scoutProfiles.postId, id));
+    const result = await db.delete(posts).where(eq(posts.id, id)).returning();
+    return result.length > 0;
   }
 }
 
