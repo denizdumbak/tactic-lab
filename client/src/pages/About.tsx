@@ -12,9 +12,9 @@ export default function About() {
           
           <h3 className="text-xl font-bold mt-8 mb-4">İletişim</h3>
           <p>
-            Futbol Analiz, benim için hem öğrenme sürecimin bir parçası hem de futbolun entelektüel ve taktik boyutlarına dair düşüncelerimi yansıttığım bir alan niteliğindedir. İletişim, scouting talepleri veya iş birliği için:
+            Tactic Lab, benim için hem öğrenme sürecimin bir parçası hem de futbolun entelektüel ve taktik boyutlarına dair düşüncelerimi yansıttığım bir alan niteliğindedir. İletişim, scouting talepleri veya iş birliği için:
             <br />
-            <a href="mailto:hello@futbolanaliz.com" className="text-primary hover:underline">hello@futbolanaliz.com</a>
+            <a href="mailto:tacticlab@gmail.com" className="text-primary hover:underline">tacticlab@gmail.com</a>
           </p>
         </div>
       </div>
