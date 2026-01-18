@@ -5,7 +5,7 @@ export function Navigation() {
   const [location] = useLocation();
 
   const links = [
-    { href: "/scout", label: "Scout" },
+    { href: "/scout", label: "Scouting" },
     { href: "/taktik", label: "Taktik" },
     { href: "/mac-analizi", label: "Maç Analizi" },
     { href: "/about", label: "Hakkında" },

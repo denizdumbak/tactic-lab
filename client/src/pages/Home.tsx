@@ -10,7 +10,8 @@ export default function Home() {
       {/* Manifesto */}
       <section className="mb-20 pt-8 pb-12 border-b border-border/40">
         <p className="text-lg md:text-xl font-serif leading-relaxed text-foreground/90 max-w-2xl mx-auto text-center italic">
-          "Bu bir içerik sitesi değildir. Futbol taktikleri, scouting ve maç analizi üzerine bir düşünce alanıdır. Tasarım kaybolmalı ve fikirler konuşmalıdır."
+          Skorun ötesinde, oyunun kalbinde. <br />
+          Her maçın hikayesini, her oyuncunun potansiyelini keşfedin.
         </p>
       </section>
 
@@ -28,9 +29,7 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          posts?.map((post) => (
-            <PostPreview key={post.id} post={post} />
-          ))
+          posts?.map((post) => <PostPreview key={post.id} post={post} />)
         )}
 
         {posts?.length === 0 && (

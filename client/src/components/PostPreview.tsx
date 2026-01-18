@@ -11,7 +11,9 @@ export function PostPreview({ post }: PostPreviewProps) {
   return (
     <article className="group mb-12 last:mb-0">
       <div className="flex items-baseline space-x-3 text-xs md:text-sm font-medium tracking-wider mb-2">
-        <span className="text-primary uppercase">{post.category.replace('-', ' ')}</span>
+        <span className="text-primary tracking-wider">
+          {post.category.replace("-", " ").toLocaleUpperCase("tr-TR")}
+        </span>
         <span className="text-muted-foreground/60">•</span>
         <span className="text-muted-foreground">
           {post.createdAt && format(new Date(post.createdAt), 'MMMM d, yyyy')}
@@ -30,13 +32,6 @@ export function PostPreview({ post }: PostPreviewProps) {
       <p className="text-muted-foreground leading-relaxed line-clamp-3 md:line-clamp-none">
         {post.summary}
       </p>
-
-      <Link 
-        href={`/post/${post.slug}`}
-        className="inline-block mt-3 text-sm font-bold border-b-2 border-primary/10 hover:border-primary transition-colors pb-0.5"
-      >
-        Analizi Oku
-      </Link>
     </article>
   );
 }

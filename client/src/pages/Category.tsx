@@ -12,7 +12,7 @@ const TITLES: Record<string, string> = {
 const DESCRIPTIONS: Record<string, string> = {
   "scout": "Potansiyel yetenekler ve transfer hedeflerine yönelik derinlemesine profil analizleri.",
   "taktik": "Sistemlerin, dizilişlerin ve antrenör felsefelerinin ayrıntılı incelemeleri.",
-  "mac-analizi": "Detaylı maç sonu değerlendirmeleri ve anahtar performans göstergeleri."
+  "mac-analizi": "Detaylı maç sonu değerlendirmeleri ve kilit performans göstergeleri."
 };
 
 export default function Category() {
