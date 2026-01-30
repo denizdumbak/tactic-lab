@@ -7,12 +7,12 @@ import { Loader2, Plus, Edit, Trash2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from "@/components/ui/select";
 import {
   AlertDialog,
@@ -30,6 +30,7 @@ import Paragraph from "@editorjs/paragraph";
 import Quote from "@editorjs/quote";
 import List from "@editorjs/list";
 import ImageTool from "@editorjs/image";
+import { Link } from "wouter";
 
 type View = "list" | "create" | "edit";
 
@@ -37,7 +38,7 @@ export default function AdminPanel() {
   const [view, setView] = useState<View>("list");
   const [editingPostId, setEditingPostId] = useState<number | null>(null);
   const [deletePostId, setDeletePostId] = useState<number | null>(null);
-  
+
   const { data: posts, isLoading } = usePosts();
   const deletePost = useDeletePost();
   const { t, language } = useLanguage();
@@ -66,8 +67,8 @@ export default function AdminPanel() {
 
   if (view === "create" || view === "edit") {
     return (
-      <PostEditor 
-        postId={editingPostId} 
+      <PostEditor
+        postId={editingPostId}
         onBack={handleBack}
         isEdit={view === "edit"}
       />
@@ -81,10 +82,21 @@ export default function AdminPanel() {
           <h1 className="text-3xl font-serif font-bold text-primary">
             {t('admin.title')}
           </h1>
-          <Button onClick={handleCreate} data-testid="button-create-post">
-            <Plus className="w-4 h-4 mr-2" />
-            {t('admin.newPost')}
-          </Button>
+
+          <div className="flex gap-3">
+            {/* Link yerine dümdüz 'a' etiketi kullandık */}
+            <a href="/">
+              <Button variant="outline">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Ana Sayfa
+              </Button>
+            </a>
+
+            <Button onClick={handleCreate} data-testid="button-create-post">
+              <Plus className="w-4 h-4 mr-2" />
+              {t('admin.newPost')}
+            </Button>
+          </div>
         </div>
 
         {isLoading ? (
@@ -120,16 +132,16 @@ export default function AdminPanel() {
                     </td>
                     <td className="p-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <Button 
-                          size="icon" 
+                        <Button
+                          size="icon"
                           variant="ghost"
                           onClick={() => handleEdit(post)}
                           data-testid={`button-edit-${post.id}`}
                         >
                           <Edit className="w-4 h-4" />
                         </Button>
-                        <Button 
-                          size="icon" 
+                        <Button
+                          size="icon"
                           variant="ghost"
                           onClick={() => setDeletePostId(post.id)}
                           data-testid={`button-delete-${post.id}`}
@@ -163,7 +175,7 @@ export default function AdminPanel() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t('admin.deleteDialog.cancel')}</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={handleDeleteConfirm}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
@@ -187,25 +199,25 @@ function PostEditor({ postId, onBack, isEdit }: PostEditorProps) {
   const editorContainerRef = useRef<HTMLDivElement>(null);
   const [isEditorReady, setIsEditorReady] = useState(false);
   const { t, language } = useLanguage();
-  
+
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
   const [category, setCategory] = useState("taktik");
   const [imageUrl, setImageUrl] = useState("");
-  
+
   const [playerName, setPlayerName] = useState("");
   const [age, setAge] = useState("");
   const [position, setPosition] = useState("");
   const [role, setRole] = useState("");
   const [strengths, setStrengths] = useState("");
   const [risks, setRisks] = useState("");
-  
+
   const { data: existingPost, isLoading: isLoadingPost } = usePostById(postId);
   const createPost = useCreatePost();
   const updatePost = useUpdatePost();
 
   const editorPlaceholder = t('admin.editor.editorPlaceholder');
-  
+
   const initializeEditor = useCallback((initialData?: any) => {
     if (editorRef.current) {
       editorRef.current.destroy();
@@ -243,12 +255,12 @@ function PostEditor({ postId, onBack, isEdit }: PostEditorProps) {
               async uploadByFile(file: File) {
                 const formData = new FormData();
                 formData.append('image', file);
-                
+
                 const response = await fetch('/api/upload', {
                   method: 'POST',
                   body: formData,
                 });
-                
+
                 const result = await response.json();
                 return {
                   success: 1,
@@ -283,7 +295,7 @@ function PostEditor({ postId, onBack, isEdit }: PostEditorProps) {
       setSummary(existingPost.summary);
       setCategory(existingPost.category);
       setImageUrl(existingPost.imageUrl || "");
-      
+
       if (existingPost.scoutProfile) {
         setPlayerName(existingPost.scoutProfile.playerName);
         setAge(existingPost.scoutProfile.age.toString());
@@ -314,7 +326,7 @@ function PostEditor({ postId, onBack, isEdit }: PostEditorProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const content = await getEditorContent();
     const slug = title.toLowerCase()
       .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
@@ -323,7 +335,7 @@ function PostEditor({ postId, onBack, isEdit }: PostEditorProps) {
       .replace(/İ/g, 'I').replace(/Ö/g, 'O').replace(/Ç/g, 'C')
       .replace(/ /g, '-')
       .replace(/[^\w-]+/g, '');
-    
+
     const postData: any = {
       slug,
       title,
@@ -369,7 +381,7 @@ function PostEditor({ postId, onBack, isEdit }: PostEditorProps) {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto px-6 py-12">
-        <button 
+        <button
           onClick={onBack}
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8"
           data-testid="button-back"
@@ -479,7 +491,7 @@ function PostEditor({ postId, onBack, isEdit }: PostEditorProps) {
 
           <div>
             <label className="block text-sm font-medium mb-2">{t('admin.editor.contentLabel')}</label>
-            <div 
+            <div
               ref={editorContainerRef}
               className="min-h-[400px] border rounded-md p-4 bg-background prose prose-sm max-w-none"
               data-testid="editor-container"
@@ -487,8 +499,8 @@ function PostEditor({ postId, onBack, isEdit }: PostEditorProps) {
           </div>
 
           <div className="flex gap-4 pt-4">
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={isPending}
               className="w-full md:w-auto"
               data-testid="button-submit"
@@ -500,8 +512,8 @@ function PostEditor({ postId, onBack, isEdit }: PostEditorProps) {
                 </>
               ) : isEdit ? t('admin.editor.update') : t('admin.editor.publish')}
             </Button>
-            <Button 
-              type="button" 
+            <Button
+              type="button"
               variant="outline"
               onClick={onBack}
               className="w-full md:w-auto"
