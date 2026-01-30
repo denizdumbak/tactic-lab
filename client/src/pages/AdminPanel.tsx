@@ -88,7 +88,7 @@ export default function AdminPanel() {
             <a href="/">
               <Button variant="outline">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Ana Sayfa
+                Home
               </Button>
             </a>
 
