@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "wouter"; // Eğer react-router-dom kullanıyorsan oradan çek
 
-export default function ScrollToTop() {
+export function ScrollToTop() {
   const [location] = useLocation();
 
   useEffect(() => {
