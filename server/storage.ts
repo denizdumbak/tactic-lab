@@ -29,72 +29,49 @@ export class DatabaseStorage implements IStorage {
 
   async getPostBySlug(slug: string): Promise<PostWithProfile | undefined> {
     const [post] = await db.select().from(posts).where(eq(posts.slug, slug));
-    
     if (!post) return undefined;
-
     const [profile] = await db.select().from(scoutProfiles).where(eq(scoutProfiles.postId, post.id));
-
     return { ...post, scoutProfile: profile };
   }
 
   async createPost(input: CreatePostRequest): Promise<Post> {
     const { scoutProfile, ...postData } = input;
-    
-    // postData as any: Content (EditorJS) nesnesi için gerekli
-    const [post] = await db.insert(posts)
-      .values(postData as any) 
-      .returning();
+    const [post] = await db.insert(posts).values(postData as any).returning();
 
     if (scoutProfile) {
-      // scoutProfile as any: strengths dizisi için gerekli
-      await db.insert(scoutProfiles)
-        .values({ ...scoutProfile, postId: post.id } as any);
+      await db.insert(scoutProfiles).values({ ...scoutProfile, postId: post.id } as any);
     }
-
     return post;
   }
 
   async getPostById(id: number): Promise<PostWithProfile | undefined> {
     const [post] = await db.select().from(posts).where(eq(posts.id, id));
-    
     if (!post) return undefined;
-
     const [profile] = await db.select().from(scoutProfiles).where(eq(scoutProfiles.postId, post.id));
-
     return { ...post, scoutProfile: profile };
   }
 
   async updatePost(id: number, input: Partial<CreatePostRequest>): Promise<Post | undefined> {
     const { scoutProfile, ...postData } = input;
-    
-    const [updatedPost] = await db.update(posts)
-      .set(postData as any)
-      .where(eq(posts.id, id))
-      .returning();
+    const [updatedPost] = await db.update(posts).set(postData as any).where(eq(posts.id, id)).returning();
 
     if (!updatedPost) return undefined;
 
     if (scoutProfile) {
-      // Önce varsa eski profili siliyoruz
       await db.delete(scoutProfiles).where(eq(scoutProfiles.postId, id));
-      // Yeni profili ekliyoruz (as any ile dizi hatasını önlüyoruz)
       await db.insert(scoutProfiles).values({ ...scoutProfile, postId: id } as any);
     }
-
     return updatedPost;
   }
 
   async deletePost(id: number): Promise<boolean> {
-    // Foreign key kısıtlaması nedeniyle önce profili siliyoruz
     await db.delete(scoutProfiles).where(eq(scoutProfiles.postId, id));
     const result = await db.delete(posts).where(eq(posts.id, id)).returning();
     return result.length > 0;
   }
 
   async incrementViewCount(id: number): Promise<void> {
-    await db.update(posts)
-      .set({ views: sql`${posts.views} + 1` })
-      .where(eq(posts.id, id));
+    await db.update(posts).set({ views: sql`${posts.views} + 1` }).where(eq(posts.id, id));
   }
 }
 

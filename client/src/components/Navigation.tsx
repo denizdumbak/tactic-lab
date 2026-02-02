@@ -31,7 +31,9 @@ export function Navigation() {
   };
 
   return (
-    <nav className="flex items-center space-x-5 md:space-x-8 text-base font-medium tracking-tight">
+    // items-center: Tüm nav elemanlarını dikeyde tam merkeze alır
+    <nav className="flex items-center space-x-5 md:space-x-8 text-base font-medium tracking-tight h-full">
+      
       {/* LİNKLER */}
       <div className={cn(
         "hidden md:flex items-center space-x-6 md:space-x-8 transition-opacity duration-300",
@@ -46,9 +48,10 @@ export function Navigation() {
           <Link
             key={link.href}
             href={link.href}
-            // pb-1 ile hizalamayı destekledik
             className={cn(
-              "hover:text-primary transition-all duration-200 border-b-2 border-transparent pb-1 text-[15px] md:text-[16px] leading-none flex items-center h-full",
+              // flex items-center: Yazıyı kutusunda ortalar
+              // h-10: Buton yüksekliği ile uyumlu bir alan yaratır
+              "flex items-center hover:text-primary transition-all duration-200 border-b-2 border-transparent pb-0.5 text-[15px] md:text-[16px] h-10 leading-none",
               location === link.href ? "text-primary border-primary" : "text-muted-foreground"
             )}
           >
@@ -57,19 +60,18 @@ export function Navigation() {
         ))}
       </div>
 
-      {/* ARAMA ALANI */}
-      <div className="relative flex items-center">
+      {/* ARAMA VE BUTON GRUBU */}
+      <div className="flex items-center gap-2">
         <div className={cn(
           "flex items-center transition-all duration-300 ease-in-out overflow-hidden bg-muted/5 rounded-full border border-transparent",
           isSearchOpen
             ? "w-[220px] md:w-[280px] border-border/50 bg-background px-3"
-            : "w-0 opacity-0"
+            : "w-0 opacity-0 invisible"
         )}>
-          {/* Arama içindeki ikonu da ortaladık */}
           <Search className="w-5 h-5 text-muted-foreground shrink-0" />
           <Input
             ref={inputRef}
-            className="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 h-10 text-base"
+            className="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 h-10 text-base shadow-none"
             placeholder="Ara..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
@@ -82,31 +84,26 @@ export function Navigation() {
           )}
         </div>
 
-        {/* TETİKLEYİCİ BUTON - Buradaki -translate-y-[1px] ikonu milimetrik yukarı taşır */}
-        <div className="flex items-center h-full">
-          {!isSearchOpen ? (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="hover:bg-transparent text-muted-foreground hover:text-primary transition-transform hover:scale-110 h-auto p-0 -translate-y-[1px]"
-              onClick={() => setIsSearchOpen(true)}
-            >
-              <Search className="w-6 h-6 stroke-[2.5]" />
-            </Button>
+        {/* TETİKLEYİCİ BUTON */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hover:bg-transparent text-muted-foreground hover:text-primary transition-transform hover:scale-110 flex items-center justify-center h-10 w-10 p-0"
+          onClick={() => {
+            if (isSearchOpen) {
+              setIsSearchOpen(false);
+              handleSearchChange("");
+            } else {
+              setIsSearchOpen(true);
+            }
+          }}
+        >
+          {isSearchOpen ? (
+            <X className="w-6 h-6 shrink-0 stroke-[2.5]" />
           ) : (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="hover:bg-transparent ml-2 transition-transform hover:scale-110 h-auto p-0 -translate-y-[1px]"
-              onClick={() => {
-                setIsSearchOpen(false);
-                handleSearchChange("");
-              }}
-            >
-              <X className="w-6 h-6 text-muted-foreground stroke-[2.5]" />
-            </Button>
+            <Search className="w-6 h-6 shrink-0 stroke-[2.5]" />
           )}
-        </div>
+        </Button>
       </div>
     </nav>
   );

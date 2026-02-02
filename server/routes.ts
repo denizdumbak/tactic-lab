@@ -14,6 +14,20 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET?.trim(),
 });
 
+// Cloudinary'den resim silme yardımcı fonksiyonu
+async function deleteFromCloudinary(imageUrl: string) {
+  try {
+    // URL'den public_id'yi ayıklıyoruz (Örn: .../tactic-lab/resim_id.jpg)
+    const parts = imageUrl.split('/');
+    const fileNameWithExtension = parts[parts.length - 1];
+    const publicId = `tactic-lab/${fileNameWithExtension.split('.')[0]}`;
+
+    await cloudinary.uploader.destroy(publicId);
+  } catch (error) {
+    console.error("Cloudinary silme hatası:", error);
+  }
+}
+
 // 2. Cloudinary Storage Ayarları
 const cloudinaryStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
@@ -49,14 +63,10 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     res.json(posts);
   });
 
-  // Slug ile Post Getirme (SAYAÇ BURADA TETİKLENİYOR)
   app.get(api.posts.get.path, async (req, res) => {
     const post = await storage.getPostBySlug(req.params.slug);
     if (!post) return res.status(404).json({ message: "Post not found" });
-
-    // Okunma sayısını artır
     await storage.incrementViewCount(post.id);
-
     res.json(post);
   });
 
@@ -103,6 +113,13 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   app.delete('/api/posts/:id', async (req, res) => {
     const id = parseInt(req.params.id);
+
+    // Silmeden önce postu bulup resmini Cloudinary'den temizliyoruz
+    const post = await storage.getPostById(id);
+    if (post && post.imageUrl) {
+      await deleteFromCloudinary(post.imageUrl);
+    }
+
     const success = await storage.deletePost(id);
     if (!success) return res.status(404).json({ message: "Post not found" });
     res.json({ success: true });
