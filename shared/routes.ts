@@ -1,6 +1,5 @@
-
 import { z } from 'zod';
-import { insertPostSchema, insertScoutProfileSchema, posts, scoutProfiles } from './schema';
+import { insertPostSchema, insertScoutProfileSchema, posts, scoutProfiles } from './schema.js';
 
 // Shared error schemas
 export const errorSchemas = {
