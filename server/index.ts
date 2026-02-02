@@ -29,6 +29,7 @@ export function log(message: string, source = "express") {
     second: "2-digit",
     hour12: true,
   });
+  console.log(`[${formattedTime}] ${source}: ${message}`);
 }
 
 app.use((req, res, next) => {
@@ -49,7 +50,6 @@ app.use((req, res, next) => {
       if (capturedJsonResponse) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
-
       log(logLine);
     }
   });
@@ -58,38 +58,37 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Routes kaydı
   await registerRoutes(httpServer, app);
 
+  // Global Hata Yakalayıcı
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
-
     res.status(status).json({ message });
-    throw err;
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
+  // Statik Dosyalar ve Vite Ayarı
   if (process.env.NODE_ENV === "production") {
     serveStatic(app);
   } else {
-    const { setupVite } = await import("./vite");
+    const { setupVite } = await import("./vite.js");
     await setupVite(httpServer, app);
   }
 
-  // Windows uyumluluğu için 5001 portunu ve localhost adresini kullanıyoruz
-  const port = 5001; 
-  httpServer.listen(
-    {
-      port,
-      host: "127.0.0.1",
-      // reusePort: true, // Bu satırı Windows desteklemediği için sildik/devre dışı bıraktık
-    },
-    () => {
-      log(`serving on port ${port}`);
-    },
-  );
+  // SADECE Local'de port dinle, Vercel'de buna gerek yok
+  if (process.env.NODE_ENV !== "production") {
+    const port = 5001; 
+    httpServer.listen(
+      {
+        port,
+        host: "127.0.0.1",
+      },
+      () => {
+        log(`serving on port ${port}`);
+      },
+    );
+  }
 })();
 
 export default app;
