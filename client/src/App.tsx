@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { LanguageProvider } from "@/lib/language-context";
 import { ScrollToTop } from "@/components/ScrollToTop";
+import { HelmetProvider } from "react-helmet-async";
 
 import Home from "@/pages/Home";
 import PostDetail from "@/pages/PostDetail";
@@ -14,7 +15,7 @@ import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
-    <> 
+    <>
       <ScrollToTop />
       <Switch>
         <Route path="/" component={Home} />
@@ -26,18 +27,20 @@ function Router() {
         <Route path="/mac-analizi" component={Category} />
         <Route component={NotFound} />
       </Switch>
-    </> 
+    </>
   );
 }
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <LanguageProvider>
-        <Toaster />
-        <Router />
-      </LanguageProvider>
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <LanguageProvider>
+          <Toaster />
+          <Router />
+        </LanguageProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
   );
 }
 
