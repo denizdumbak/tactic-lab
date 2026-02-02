@@ -1,16 +1,13 @@
-
 import { db } from "./db";
 import {
   posts,
   scoutProfiles,
   type Post,
-  type InsertPost,
   type ScoutProfile,
-  type InsertScoutProfile,
   type CreatePostRequest,
   type PostWithProfile
 } from "@shared/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 
 export interface IStorage {
   getPosts(category?: string): Promise<Post[]>;
@@ -19,6 +16,7 @@ export interface IStorage {
   createPost(post: CreatePostRequest): Promise<Post>;
   updatePost(id: number, post: Partial<CreatePostRequest>): Promise<Post | undefined>;
   deletePost(id: number): Promise<boolean>;
+  incrementViewCount(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -34,7 +32,6 @@ export class DatabaseStorage implements IStorage {
     
     if (!post) return undefined;
 
-    // Fetch associated scout profile if exists
     const [profile] = await db.select().from(scoutProfiles).where(eq(scoutProfiles.postId, post.id));
 
     return { ...post, scoutProfile: profile };
@@ -43,18 +40,15 @@ export class DatabaseStorage implements IStorage {
   async createPost(input: CreatePostRequest): Promise<Post> {
     const { scoutProfile, ...postData } = input;
     
-    const [post] = await db.insert(posts).values(postData).returning();
+    // postData as any: Content (EditorJS) nesnesi için gerekli
+    const [post] = await db.insert(posts)
+      .values(postData as any) 
+      .returning();
 
     if (scoutProfile) {
-      await db.insert(scoutProfiles).values({
-        playerName: scoutProfile.playerName,
-        age: scoutProfile.age,
-        position: scoutProfile.position,
-        role: scoutProfile.role,
-        strengths: scoutProfile.strengths,
-        risks: scoutProfile.risks,
-        postId: post.id
-      } as typeof scoutProfiles.$inferInsert);
+      // scoutProfile as any: strengths dizisi için gerekli
+      await db.insert(scoutProfiles)
+        .values({ ...scoutProfile, postId: post.id } as any);
     }
 
     return post;
@@ -73,33 +67,34 @@ export class DatabaseStorage implements IStorage {
   async updatePost(id: number, input: Partial<CreatePostRequest>): Promise<Post | undefined> {
     const { scoutProfile, ...postData } = input;
     
-    const [post] = await db.update(posts)
-      .set(postData)
+    const [updatedPost] = await db.update(posts)
+      .set(postData as any)
       .where(eq(posts.id, id))
       .returning();
 
-    if (!post) return undefined;
+    if (!updatedPost) return undefined;
 
     if (scoutProfile) {
+      // Önce varsa eski profili siliyoruz
       await db.delete(scoutProfiles).where(eq(scoutProfiles.postId, id));
-      await db.insert(scoutProfiles).values({
-        playerName: scoutProfile.playerName,
-        age: scoutProfile.age,
-        position: scoutProfile.position,
-        role: scoutProfile.role,
-        strengths: scoutProfile.strengths,
-        risks: scoutProfile.risks,
-        postId: post.id
-      } as typeof scoutProfiles.$inferInsert);
+      // Yeni profili ekliyoruz (as any ile dizi hatasını önlüyoruz)
+      await db.insert(scoutProfiles).values({ ...scoutProfile, postId: id } as any);
     }
 
-    return post;
+    return updatedPost;
   }
 
   async deletePost(id: number): Promise<boolean> {
+    // Foreign key kısıtlaması nedeniyle önce profili siliyoruz
     await db.delete(scoutProfiles).where(eq(scoutProfiles.postId, id));
     const result = await db.delete(posts).where(eq(posts.id, id)).returning();
     return result.length > 0;
+  }
+
+  async incrementViewCount(id: number): Promise<void> {
+    await db.update(posts)
+      .set({ views: sql`${posts.views} + 1` })
+      .where(eq(posts.id, id));
   }
 }
 

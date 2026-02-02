@@ -4,48 +4,59 @@ import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
 import multer from "multer";
-import path from "path";
-import fs from "fs";
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 
-const uploadDir = path.join(process.cwd(), "uploads");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+// 1. Cloudinary Yapılandırması
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME?.trim(),
+  api_key: process.env.CLOUDINARY_API_KEY?.trim(),
+  api_secret: process.env.CLOUDINARY_API_SECRET?.trim(),
+});
+
+// 2. Cloudinary Storage Ayarları
+const cloudinaryStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'tactic-lab',
+    allowed_formats: ['jpg', 'png', 'webp', 'jpeg'],
+    transformation: [{ width: 1200, crop: 'limit', quality: 'auto' }]
+  } as any,
+});
 
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: uploadDir,
-    filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      cb(null, uniqueSuffix + path.extname(file.originalname));
-    }
-  }),
+  storage: cloudinaryStorage,
   limits: { fileSize: 10 * 1024 * 1024 }
 });
 
 function createCleanSlug(title: string): string {
   return title
-    .toLowerCase()
+    .replace(/İ/g, 'i').replace(/I/g, 'i').toLowerCase()
     .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
     .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
     .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
+    .replace(/[\s_-]+/g, '-')
     .replace(/-+/g, '-')
     .trim()
     .replace(/^-+|-+$/g, '');
 }
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
-  
+
   app.get(api.posts.list.path, async (req, res) => {
     const category = req.query.category as string | undefined;
     const posts = await storage.getPosts(category);
     res.json(posts);
   });
 
+  // Slug ile Post Getirme (SAYAÇ BURADA TETİKLENİYOR)
   app.get(api.posts.get.path, async (req, res) => {
     const post = await storage.getPostBySlug(req.params.slug);
     if (!post) return res.status(404).json({ message: "Post not found" });
+
+    // Okunma sayısını artır
+    await storage.incrementViewCount(post.id);
+
     res.json(post);
   });
 
@@ -55,18 +66,13 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       let baseSlug = createCleanSlug(input.title);
       let finalSlug = baseSlug;
       let counter = 1;
-      
+
       while (await storage.getPostBySlug(finalSlug)) {
         finalSlug = `${baseSlug}-${counter}`;
         counter++;
       }
 
-      // TypeScript hatasını önlemek için objeyi güvenli şekilde oluşturuyoruz
-      const postData = {
-        ...input,
-        slug: finalSlug
-      };
-
+      const postData = { ...input, slug: finalSlug };
       const post = await storage.createPost(postData as any);
       res.status(201).json(post);
     } catch (err) {
@@ -104,9 +110,9 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   app.post('/api/upload', upload.single('image'), (req, res) => {
     if (!req.file) return res.status(400).json({ message: "No file uploaded" });
-    res.json({ success: true, url: `/uploads/${req.file.filename}` });
+    const url = (req.file as any).path;
+    res.json({ success: 1, file: { url }, url });
   });
 
-  app.use('/uploads', (await import('express')).default.static(uploadDir));
   return httpServer;
 }

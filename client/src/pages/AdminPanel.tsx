@@ -3,7 +3,7 @@ import { usePosts, useCreatePost, useUpdatePost, useDeletePost, usePostById } fr
 import { type Post } from "@shared/schema";
 import { useLanguage } from "@/lib/language-context";
 import { getCategoryLabel } from "@/lib/i18n";
-import { Loader2, Plus, Edit, Trash2, ArrowLeft, Upload, X, Image as ImageIcon, Home } from "lucide-react";
+import { Loader2, Plus, Edit, Trash2, ArrowLeft, Upload, X, Image as ImageIcon, Home, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -54,6 +54,7 @@ export default function AdminPanel() {
                 <tr>
                   <th className="p-4">Başlık</th>
                   <th className="p-4">Kategori</th>
+                  <th className="p-4 text-center"><Eye className="w-4 h-4 mx-auto" /></th>
                   <th className="p-4 text-right">İşlemler</th>
                 </tr>
               </thead>
@@ -62,6 +63,7 @@ export default function AdminPanel() {
                   <tr key={post.id} className="border-t hover:bg-muted/30 transition-colors">
                     <td className="p-4 font-medium">{post.title}</td>
                     <td className="p-4">{getCategoryLabel(language, post.category)}</td>
+                    <td className="p-4 text-center font-mono text-sm">{post.views || 0}</td>
                     <td className="p-4 text-right space-x-2">
                       <Button variant="ghost" size="icon" onClick={() => { setEditingPostId(post.id); setView("edit"); }}><Edit className="w-4 h-4" /></Button>
                       <Button variant="ghost" size="icon" onClick={() => setDeletePostId(post.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
@@ -110,8 +112,20 @@ function PostEditor({ postId, onBack, isEdit }: { postId: number | null, onBack:
     try {
       const res = await fetch('/api/upload', { method: 'POST', body: formData });
       const data = await res.json();
-      setImageUrl(data.url);
-    } catch (err) { console.error(err); } finally { setIsUploading(false); }
+
+      // Cloudinary'den dönen URL'i yakalamak için tüm ihtimalleri kontrol ediyoruz
+      const uploadedUrl = data.url || (data.file && data.file.url);
+
+      if (uploadedUrl) {
+        setImageUrl(uploadedUrl);
+      } else {
+        console.error("URL bulunamadı, gelen veri:", data);
+      }
+    } catch (err) {
+      console.error("Yükleme sırasında teknik bir hata oluştu:", err);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const initializeEditor = useCallback((data?: any) => {

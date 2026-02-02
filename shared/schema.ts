@@ -1,4 +1,3 @@
-
 import { pgTable, text, serial, timestamp, integer, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -22,8 +21,9 @@ export const posts = pgTable("posts", {
   title: text("title").notNull(),
   summary: text("summary").notNull(),
   content: jsonb("content").$type<EditorJSContent>().notNull(),
-  category: text("category").notNull(), // 'scout', 'taktik', 'mac-analizi'
+  category: text("category").notNull(),
   imageUrl: text("image_url"),
+  views: integer("views").default(0).notNull(), 
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -39,7 +39,7 @@ export const scoutProfiles = pgTable("scout_profiles", {
 });
 
 // === BASE SCHEMAS ===
-export const insertPostSchema = createInsertSchema(posts).omit({ id: true, createdAt: true });
+export const insertPostSchema = createInsertSchema(posts).omit({ id: true, createdAt: true, views: true });
 export const insertScoutProfileSchema = createInsertSchema(scoutProfiles).omit({ id: true });
 
 // === EXPLICIT API CONTRACT TYPES ===
