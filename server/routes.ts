@@ -17,11 +17,9 @@ cloudinary.config({
 // Cloudinary'den resim silme yardımcı fonksiyonu
 async function deleteFromCloudinary(imageUrl: string) {
   try {
-    // URL'den public_id'yi ayıklıyoruz (Örn: .../tactic-lab/resim_id.jpg)
     const parts = imageUrl.split('/');
     const fileNameWithExtension = parts[parts.length - 1];
     const publicId = `tactic-lab/${fileNameWithExtension.split('.')[0]}`;
-
     await cloudinary.uploader.destroy(publicId);
   } catch (error) {
     console.error("Cloudinary silme hatası:", error);
@@ -57,19 +55,30 @@ function createCleanSlug(title: string): string {
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
 
+  // Blog postlarını listele
   app.get(api.posts.list.path, async (req, res) => {
-    const category = req.query.category as string | undefined;
-    const posts = await storage.getPosts(category);
-    res.json(posts);
+    try {
+      const category = req.query.category as string | undefined;
+      const posts = await storage.getPosts(category);
+      res.json(posts);
+    } catch (err) {
+      res.status(500).json({ message: "Posts could not be fetched" });
+    }
   });
 
+  // Tekil post getir (Slug ile)
   app.get(api.posts.get.path, async (req, res) => {
-    const post = await storage.getPostBySlug(req.params.slug);
-    if (!post) return res.status(404).json({ message: "Post not found" });
-    await storage.incrementViewCount(post.id);
-    res.json(post);
+    try {
+      const post = await storage.getPostBySlug(req.params.slug);
+      if (!post) return res.status(404).json({ message: "Post not found" });
+      await storage.incrementViewCount(post.id);
+      res.json(post);
+    } catch (err) {
+      res.status(500).json({ message: "Post could not be fetched" });
+    }
   });
 
+  // Post oluştur
   app.post(api.posts.create.path, async (req, res) => {
     try {
       const input = api.posts.create.input.parse(req.body);
@@ -91,13 +100,19 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     }
   });
 
+  // ID ile post getir
   app.get('/api/posts/id/:id', async (req, res) => {
-    const id = parseInt(req.params.id);
-    const post = await storage.getPostById(id);
-    if (!post) return res.status(404).json({ message: "Post not found" });
-    res.json(post);
+    try {
+      const id = parseInt(req.params.id);
+      const post = await storage.getPostById(id);
+      if (!post) return res.status(404).json({ message: "Post not found" });
+      res.json(post);
+    } catch (err) {
+      res.status(500).json({ message: "Error fetching post by ID" });
+    }
   });
 
+  // Post güncelle
   app.put('/api/posts/:id', async (req, res) => {
     try {
       const id = parseInt(req.params.id);
@@ -111,20 +126,23 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     }
   });
 
+  // Post sil
   app.delete('/api/posts/:id', async (req, res) => {
-    const id = parseInt(req.params.id);
-
-    // Silmeden önce postu bulup resmini Cloudinary'den temizliyoruz
-    const post = await storage.getPostById(id);
-    if (post && post.imageUrl) {
-      await deleteFromCloudinary(post.imageUrl);
+    try {
+      const id = parseInt(req.params.id);
+      const post = await storage.getPostById(id);
+      if (post && post.imageUrl) {
+        await deleteFromCloudinary(post.imageUrl);
+      }
+      const success = await storage.deletePost(id);
+      if (!success) return res.status(404).json({ message: "Post not found" });
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ message: "Error deleting post" });
     }
-
-    const success = await storage.deletePost(id);
-    if (!success) return res.status(404).json({ message: "Post not found" });
-    res.json({ success: true });
   });
 
+  // Resim Yükleme
   app.post('/api/upload', upload.single('image'), (req, res) => {
     if (!req.file) return res.status(400).json({ message: "No file uploaded" });
     const url = (req.file as any).path;
