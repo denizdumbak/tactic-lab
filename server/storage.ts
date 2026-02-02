@@ -6,7 +6,7 @@ import {
   type ScoutProfile,
   type CreatePostRequest,
   type PostWithProfile
-} from "@shared/schema";
+} from "../shared/schema";
 import { eq, desc, sql } from "drizzle-orm";
 
 export interface IStorage {
