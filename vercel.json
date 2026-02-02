@@ -2,28 +2,23 @@
   "version": 2,
   "builds": [
     {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "dist/public" }
+    },
+    {
       "src": "server/index.ts",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["shared/**", "dist/public/**"]
-      }
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/favicon.ico",
-      "dest": "/favicon.ico"
+      "src": "/api/(.*)",
+      "dest": "server/index.ts"
     },
     {
       "src": "/assets/(.*)",
-      "dest": "dist/public/assets/$1"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "server/index.ts"
+      "dest": "/assets/$1"
     },
     {
       "src": "/(.*)",
