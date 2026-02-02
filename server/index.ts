@@ -9,24 +9,15 @@ const httpServer = createServer(app);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// 1. Önce statik dosyaları sun (Auth'a takılmasın)
-if (process.env.NODE_ENV === "production") {
-  serveStatic(app);
-}
-
 (async () => {
-  // 2. Sonra API rotalarını kaydet
+  // 1. ÖNCE API Rotalarını Kaydet (Öncelik API'de olmalı)
   await registerRoutes(httpServer, app);
 
-  // Global Hata Yakalayıcı
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-    res.status(status).json({ message });
-  });
-
-  // 3. Vite ayarı (Sadece Development'ta)
-  if (process.env.NODE_ENV !== "production") {
+  // 2. SONRA Statik Dosyalar (Üretim ortamındaysak)
+  if (process.env.NODE_ENV === "production") {
+    serveStatic(app);
+  } else {
+    // Development ortamında Vite
     const { setupVite } = await import("./vite.js");
     await setupVite(httpServer, app);
     
@@ -35,6 +26,13 @@ if (process.env.NODE_ENV === "production") {
       console.log(`[express] serving on port ${port}`);
     });
   }
+
+  // Global Hata Yakalayıcı (Rotalardan sonra gelmeli)
+  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+    const status = err.status || err.statusCode || 500;
+    const message = err.message || "Internal Server Error";
+    res.status(status).json({ message });
+  });
 })();
 
 export default app;
