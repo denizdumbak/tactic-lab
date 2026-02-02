@@ -15,60 +15,45 @@ export function PostPreview({ post }: PostPreviewProps) {
   const { t, language } = useLanguage();
 
   return (
-    <article className="group mb-8 pb-8 border-b border-border/40 last:border-0 last:mb-0 last:pb-0 flex flex-col md:flex-row gap-6 items-start">
-      
-      {/* --- SOL TARAF: METİN İÇERİĞİ --- */}
-      <div className="flex-1 order-2 md:order-1">
-        
-        {/* Kategori ve Tarih */}
-        <div className="flex items-center space-x-3 text-xs md:text-sm font-medium tracking-wider mb-2">
-          <span className="text-primary tracking-wider uppercase" data-testid={`text-category-${post.id}`}>
-            {getCategoryLabel(language, post.category)}
-          </span>
-          <span className="text-muted-foreground/60">•</span>
-          <span className="text-muted-foreground">
-            {post.createdAt && format(new Date(post.createdAt), 'MMM d, yyyy')}
-          </span>
-        </div>
-
-        {/* Başlık */}
-        <Link href={`/post/${post.slug}`}>
-          <h2 className={cn(
-            "text-xl md:text-2xl font-serif font-bold mb-3 leading-tight",
-            "group-hover:text-primary transition-colors duration-200 cursor-pointer"
-          )} data-testid={`text-title-${post.id}`}>
-            {post.title}
-          </h2>
-        </Link>
-
-        {/* Özet Metni */}
-        <p className="text-muted-foreground text-sm md:text-base leading-relaxed line-clamp-3 mb-3">
-          {post.summary}
-        </p>
-
-        {/* Devamını Oku Linki */}
-        <Link 
-          href={`/post/${post.slug}`}
-          className="inline-flex items-center text-sm font-bold text-primary hover:text-primary/80 transition-colors"
-          data-testid={`link-read-${post.id}`}
-        >
-          {t('post.readAnalysis')} 
-          <span className="ml-1 group-hover:translate-x-1 transition-transform">→</span>
-        </Link>
-      </div>
-
-      {/* --- SAĞ TARAF: GÖRSEL --- */}
-      <Link href={`/post/${post.slug}`} className="order-1 md:order-2 w-full md:w-60 shrink-0">
-        <div className="aspect-video md:aspect-[4/3] overflow-hidden rounded-md bg-gray-100 border border-border/50">
+    <article className="group flex flex-col h-full">
+      <Link href={`/post/${post.slug}`} className="block mb-4">
+        <div className="aspect-video overflow-hidden rounded-lg bg-muted border border-border/50">
           <img 
             src={imageUrl} 
             alt={post.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            data-testid={`img-post-${post.id}`}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         </div>
       </Link>
 
+      <div className="flex flex-col flex-grow space-y-2">
+        <div className="flex items-center text-[10px] md:text-xs font-bold tracking-widest uppercase text-primary/80">
+          {getCategoryLabel(language, post.category)}
+          <span className="mx-2 text-muted-foreground/30">•</span>
+          <span className="font-normal text-muted-foreground italic">
+            {post.createdAt && format(new Date(post.createdAt), 'dd.MM.yyyy')}
+          </span>
+        </div>
+
+        <Link href={`/post/${post.slug}`}>
+          <h2 className="text-lg md:text-xl font-serif font-bold leading-tight group-hover:text-primary transition-colors line-clamp-2">
+            {post.title}
+          </h2>
+        </Link>
+
+        <p className="text-muted-foreground text-xs md:text-sm line-clamp-3 leading-relaxed">
+          {post.summary}
+        </p>
+
+        <div className="pt-3 mt-auto">
+          <Link 
+            href={`/post/${post.slug}`}
+            className="text-xs font-bold uppercase tracking-tighter border-b-2 border-primary/20 hover:border-primary transition-all pb-1"
+          >
+            {t('post.readAnalysis')} →
+          </Link>
+        </div>
+      </div>
     </article>
   );
 }

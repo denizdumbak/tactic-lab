@@ -7,7 +7,7 @@ import { useLanguage } from "@/lib/language-context";
 import { getCategoryLabel } from "@/lib/i18n";
 import { format } from "date-fns";
 import { ArrowLeft } from "lucide-react";
-import { Helmet } from "react-helmet-async"; // SEO için eklendi
+import { Helmet } from "react-helmet-async";
 
 export default function PostDetail() {
   const [, params] = useRoute("/post/:slug");
@@ -44,22 +44,16 @@ export default function PostDetail() {
 
   return (
     <Layout>
-      {/* --- SEO VE META ETİKETLERİ --- */}
       <Helmet>
         <title>{post.title} | Tactic Lab</title>
         <meta name="description" content={post.summary || post.title} />
-
-        {/* Open Graph / Facebook / WhatsApp */}
         <meta property="og:type" content="article" />
         <meta property="og:title" content={`${post.title} | Tactic Lab`} />
         <meta property="og:description" content={post.summary} />
         {post.imageUrl && <meta property="og:image" content={post.imageUrl} />}
-
-        {/* Twitter (X) Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={post.title} />
         <meta name="twitter:description" content={post.summary} />
-        {post.imageUrl && <meta name="twitter:image" content={post.imageUrl} />}
       </Helmet>
 
       <article className="max-w-2xl mx-auto pt-8 md:pt-12">
@@ -90,8 +84,8 @@ export default function PostDetail() {
           <div className="mb-12">
             <img
               src={post.imageUrl}
-              alt={post.title}
-              className="w-full h-auto bg-gray-100"
+              alt={`${post.title} - Tactic Lab`}
+              className="w-full h-auto bg-gray-100 rounded-sm shadow-sm"
             />
             <p className="mt-2 text-xs text-center text-muted-foreground/60 italic">
               {t('post.imageSource')}

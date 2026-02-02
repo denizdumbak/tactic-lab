@@ -16,26 +16,33 @@ export default function Category() {
 
   return (
     <Layout>
-      <header className="mb-16 pt-8 border-b border-border/40 pb-8">
-        <h1 className="text-3xl md:text-4xl font-serif font-bold text-primary mb-4" data-testid="text-category-title">
+      <header className="mb-12 pt-4 border-b border-border/40 pb-8 text-center md:text-left">
+        <h1 className="text-3xl md:text-5xl font-serif font-bold text-primary mb-4" data-testid="text-category-title">
           {getCategoryTitle(language, category)}
         </h1>
-        <p className="text-lg text-muted-foreground font-serif italic" data-testid="text-category-description">
+        <p className="text-lg text-muted-foreground font-serif italic max-w-3xl" data-testid="text-category-description">
           {getCategoryDescription(language, category)}
         </p>
       </header>
 
-      <div className="max-w-2xl mx-auto">
+      {/* Grid Yapısı Eklendi */}
+      <div className="w-full">
         {isLoading ? (
-          <div className="space-y-12 animate-pulse">
-            {[1, 2].map((i) => (
-              <div key={i} className="h-32 bg-gray-100 w-full" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-pulse">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="space-y-4">
+                <div className="aspect-video bg-gray-100 rounded-lg" />
+                <div className="h-6 bg-gray-100 w-3/4" />
+                <div className="h-4 bg-gray-100 w-full" />
+              </div>
             ))}
           </div>
         ) : (
-          posts?.map((post) => (
-            <PostPreview key={post.id} post={post} />
-          ))
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+            {posts?.map((post) => (
+              <PostPreview key={post.id} post={post} />
+            ))}
+          </div>
         )}
         
         {posts?.length === 0 && (

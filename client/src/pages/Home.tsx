@@ -9,30 +9,33 @@ export default function Home() {
 
   return (
     <Layout>
-      <section className="mb-20 pt-8 pb-12 border-b border-border/40">
-        <p className="text-lg md:text-xl font-serif leading-relaxed text-foreground/90 max-w-2xl mx-auto text-center italic" data-testid="text-manifesto">
+      <section className="mb-12 pt-8 pb-10 border-b border-border/40">
+        <p className="text-lg md:text-xl font-serif leading-relaxed text-foreground/90 max-w-2xl mx-auto text-center italic">
           {t('home.manifesto')}
         </p>
       </section>
 
-      <section className="max-w-2xl mx-auto">
+      <section className="max-w-7xl mx-auto px-4">
         {isLoading ? (
-          <div className="space-y-12 animate-pulse">
-            {[1, 2, 3].map((i) => (
-              <div key={i}>
-                <div className="h-4 w-24 bg-gray-200 mb-4 rounded-none" />
-                <div className="h-8 w-3/4 bg-gray-200 mb-4 rounded-none" />
-                <div className="h-4 w-full bg-gray-200 mb-2 rounded-none" />
-                <div className="h-4 w-2/3 bg-gray-200 rounded-none" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-pulse">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="space-y-4">
+                <div className="aspect-video bg-gray-200 rounded-lg" />
+                <div className="h-4 w-1/4 bg-gray-200" />
+                <div className="h-6 w-3/4 bg-gray-200" />
               </div>
             ))}
           </div>
         ) : (
-          posts?.map((post) => <PostPreview key={post.id} post={post} />)
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+            {posts?.map((post) => (
+              <PostPreview key={post.id} post={post} />
+            ))}
+          </div>
         )}
 
         {posts?.length === 0 && (
-          <div className="text-center py-20 text-muted-foreground" data-testid="text-empty-state">
+          <div className="text-center py-20 text-muted-foreground">
             {t('home.emptyState')}
           </div>
         )}

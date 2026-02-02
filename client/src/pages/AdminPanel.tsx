@@ -3,27 +3,12 @@ import { usePosts, useCreatePost, useUpdatePost, useDeletePost, usePostById } fr
 import { type Post } from "@shared/schema";
 import { useLanguage } from "@/lib/language-context";
 import { getCategoryLabel } from "@/lib/i18n";
-import { Loader2, Plus, Edit, Trash2, ArrowLeft } from "lucide-react";
+import { Loader2, Plus, Edit, Trash2, ArrowLeft, Upload, X, Image as ImageIcon, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import EditorJS from "@editorjs/editorjs";
 import Header from "@editorjs/header";
 import Paragraph from "@editorjs/paragraph";
@@ -43,122 +28,46 @@ export default function AdminPanel() {
   const deletePost = useDeletePost();
   const { t, language } = useLanguage();
 
-  const handleEdit = (post: Post) => {
-    setEditingPostId(post.id);
-    setView("edit");
-  };
-
-  const handleCreate = () => {
-    setEditingPostId(null);
-    setView("create");
-  };
-
-  const handleBack = () => {
-    setView("list");
-    setEditingPostId(null);
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (deletePostId) {
-      await deletePost.mutateAsync(deletePostId);
-      setDeletePostId(null);
-    }
-  };
-
   if (view === "create" || view === "edit") {
-    return (
-      <PostEditor
-        postId={editingPostId}
-        onBack={handleBack}
-        isEdit={view === "edit"}
-      />
-    );
+    return <PostEditor postId={editingPostId} onBack={() => { setView("list"); setEditingPostId(null); }} isEdit={view === "edit"} />;
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-6xl mx-auto px-6 py-12">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-serif font-bold text-primary">
-            {t('admin.title')}
-          </h1>
-
-          <div className="flex gap-3">
-            {/* Link yerine dümdüz 'a' etiketi kullandık */}
-            <a href="/">
-              <Button variant="outline">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Home
+    <div className="min-h-screen bg-background p-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <div className="flex items-center gap-4">
+            <h1 className="text-3xl font-bold font-serif">{t('admin.title')}</h1>
+            <Link href="/">
+              <Button variant="outline" size="sm">
+                <Home className="w-4 h-4 mr-2" /> Ana Sayfa
               </Button>
-            </a>
-
-            <Button onClick={handleCreate} data-testid="button-create-post">
-              <Plus className="w-4 h-4 mr-2" />
-              {t('admin.newPost')}
-            </Button>
+            </Link>
           </div>
+          <Button onClick={() => setView("create")}><Plus className="w-4 h-4 mr-2" /> {t('admin.newPost')}</Button>
         </div>
 
-        {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-          </div>
-        ) : (
-          <div className="border rounded-md overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-muted/50">
+        {isLoading ? <Loader2 className="animate-spin mx-auto mt-20" /> : (
+          <div className="border rounded-lg bg-card overflow-hidden shadow-sm">
+            <table className="w-full text-left">
+              <thead className="bg-muted">
                 <tr>
-                  <th className="text-left p-4 font-medium">{t('admin.tableHeaders.title')}</th>
-                  <th className="text-left p-4 font-medium">{t('admin.tableHeaders.category')}</th>
-                  <th className="text-left p-4 font-medium">{t('admin.tableHeaders.date')}</th>
-                  <th className="text-right p-4 font-medium">{t('admin.tableHeaders.actions')}</th>
+                  <th className="p-4">Başlık</th>
+                  <th className="p-4">Kategori</th>
+                  <th className="p-4 text-right">İşlemler</th>
                 </tr>
               </thead>
               <tbody>
                 {posts?.map((post) => (
-                  <tr key={post.id} className="border-t" data-testid={`row-post-${post.id}`}>
-                    <td className="p-4">
-                      <span className="font-medium">{post.title}</span>
-                    </td>
-                    <td className="p-4">
-                      <span className="text-sm text-muted-foreground">
-                        {getCategoryLabel(language, post.category)}
-                      </span>
-                    </td>
-                    <td className="p-4">
-                      <span className="text-sm text-muted-foreground">
-                        {post.createdAt && new Date(post.createdAt).toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US')}
-                      </span>
-                    </td>
-                    <td className="p-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={() => handleEdit(post)}
-                          data-testid={`button-edit-${post.id}`}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={() => setDeletePostId(post.id)}
-                          data-testid={`button-delete-${post.id}`}
-                        >
-                          <Trash2 className="w-4 h-4 text-destructive" />
-                        </Button>
-                      </div>
+                  <tr key={post.id} className="border-t hover:bg-muted/30 transition-colors">
+                    <td className="p-4 font-medium">{post.title}</td>
+                    <td className="p-4">{getCategoryLabel(language, post.category)}</td>
+                    <td className="p-4 text-right space-x-2">
+                      <Button variant="ghost" size="icon" onClick={() => { setEditingPostId(post.id); setView("edit"); }}><Edit className="w-4 h-4" /></Button>
+                      <Button variant="ghost" size="icon" onClick={() => setDeletePostId(post.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
                     </td>
                   </tr>
                 ))}
-                {posts?.length === 0 && (
-                  <tr>
-                    <td colSpan={4} className="p-8 text-center text-muted-foreground">
-                      {t('admin.emptyState')}
-                    </td>
-                  </tr>
-                )}
               </tbody>
             </table>
           </div>
@@ -167,20 +76,10 @@ export default function AdminPanel() {
 
       <AlertDialog open={!!deletePostId} onOpenChange={() => setDeletePostId(null)}>
         <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('admin.deleteDialog.title')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('admin.deleteDialog.description')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
+          <AlertDialogHeader><AlertDialogTitle>Bu yazıyı silmek istediğinize emin misiniz?</AlertDialogTitle></AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('admin.deleteDialog.cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteConfirm}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {t('admin.deleteDialog.confirm')}
-            </AlertDialogAction>
+            <AlertDialogCancel>Vazgeç</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive" onClick={async () => { if (deletePostId) await deletePost.mutateAsync(deletePostId); setDeletePostId(null); }}>Sil</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -188,106 +87,60 @@ export default function AdminPanel() {
   );
 }
 
-interface PostEditorProps {
-  postId: number | null;
-  onBack: () => void;
-  isEdit: boolean;
-}
-
-function PostEditor({ postId, onBack, isEdit }: PostEditorProps) {
+function PostEditor({ postId, onBack, isEdit }: { postId: number | null, onBack: () => void, isEdit: boolean }) {
   const editorRef = useRef<EditorJS | null>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
-  const [isEditorReady, setIsEditorReady] = useState(false);
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
 
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
   const [category, setCategory] = useState("taktik");
   const [imageUrl, setImageUrl] = useState("");
-
-  const [playerName, setPlayerName] = useState("");
-  const [age, setAge] = useState("");
-  const [position, setPosition] = useState("");
-  const [role, setRole] = useState("");
-  const [strengths, setStrengths] = useState("");
-  const [risks, setRisks] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [scoutData, setScoutData] = useState({ playerName: "", age: "", position: "", role: "", strengths: "", risks: "" });
 
   const { data: existingPost, isLoading: isLoadingPost } = usePostById(postId);
   const createPost = useCreatePost();
   const updatePost = useUpdatePost();
 
-  const editorPlaceholder = t('admin.editor.editorPlaceholder');
+  const handleFileUpload = async (file: File) => {
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append('image', file);
+    try {
+      const res = await fetch('/api/upload', { method: 'POST', body: formData });
+      const data = await res.json();
+      setImageUrl(data.url);
+    } catch (err) { console.error(err); } finally { setIsUploading(false); }
+  };
 
-  const initializeEditor = useCallback((initialData?: any) => {
+  const initializeEditor = useCallback((data?: any) => {
     if (editorRef.current) {
       editorRef.current.destroy();
       editorRef.current = null;
     }
-
-    if (!editorContainerRef.current) return;
-
-    const editor = new EditorJS({
-      holder: editorContainerRef.current,
-      placeholder: editorPlaceholder,
-      data: initialData,
+    editorRef.current = new EditorJS({
+      holder: editorContainerRef.current!,
+      data: data || {},
       tools: {
-        header: {
-          class: Header as any,
-          config: {
-            levels: [2, 3, 4],
-            defaultLevel: 2
-          }
-        },
-        paragraph: {
-          class: Paragraph as any,
-        },
-        quote: {
-          class: Quote as any,
-        },
-        list: {
-          class: List as any,
-          inlineToolbar: true,
-        },
+        header: Header, paragraph: Paragraph, quote: Quote, list: List,
         image: {
           class: ImageTool as any,
           config: {
             uploader: {
-              async uploadByFile(file: File) {
+              uploadByFile: async (file: File) => {
                 const formData = new FormData();
                 formData.append('image', file);
-
-                const response = await fetch('/api/upload', {
-                  method: 'POST',
-                  body: formData,
-                });
-
-                const result = await response.json();
-                return {
-                  success: 1,
-                  file: {
-                    url: result.url,
-                  }
-                };
-              },
-              async uploadByUrl(url: string) {
-                return {
-                  success: 1,
-                  file: {
-                    url: url,
-                  }
-                };
+                const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                const result = await res.json();
+                return { success: 1, file: { url: result.url } };
               }
             }
           }
-        },
-      },
-      onReady: () => {
-        setIsEditorReady(true);
-      },
+        }
+      }
     });
-
-    editorRef.current = editor;
-  }, [editorPlaceholder]);
+  }, []);
 
   useEffect(() => {
     if (isEdit && existingPost) {
@@ -295,234 +148,141 @@ function PostEditor({ postId, onBack, isEdit }: PostEditorProps) {
       setSummary(existingPost.summary);
       setCategory(existingPost.category);
       setImageUrl(existingPost.imageUrl || "");
-
       if (existingPost.scoutProfile) {
-        setPlayerName(existingPost.scoutProfile.playerName);
-        setAge(existingPost.scoutProfile.age.toString());
-        setPosition(existingPost.scoutProfile.position);
-        setRole(existingPost.scoutProfile.role);
-        setStrengths(existingPost.scoutProfile.strengths.join(", "));
-        setRisks(existingPost.scoutProfile.risks.join(", "));
+        setScoutData({
+          playerName: existingPost.scoutProfile.playerName,
+          age: existingPost.scoutProfile.age.toString(),
+          position: existingPost.scoutProfile.position,
+          role: existingPost.scoutProfile.role,
+          strengths: existingPost.scoutProfile.strengths.join(", "),
+          risks: existingPost.scoutProfile.risks.join(", ")
+        });
       }
-
-      const contentData = existingPost.content as { blocks: any[] } | null;
-      initializeEditor(contentData || undefined);
+      initializeEditor(existingPost.content);
     } else if (!isEdit) {
       initializeEditor();
     }
-
-    return () => {
-      if (editorRef.current) {
-        editorRef.current.destroy();
-        editorRef.current = null;
-      }
-    };
+    return () => { editorRef.current?.destroy(); editorRef.current = null; };
   }, [isEdit, existingPost, initializeEditor]);
-
-  const getEditorContent = async () => {
-    if (!editorRef.current) return { blocks: [] };
-    return await editorRef.current.save();
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const content = await getEditorContent();
-    const slug = title.toLowerCase()
-      .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
-      .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
-      .replace(/Ğ/g, 'G').replace(/Ü/g, 'U').replace(/Ş/g, 'S')
-      .replace(/İ/g, 'I').replace(/Ö/g, 'O').replace(/Ç/g, 'C')
-      .replace(/ /g, '-')
-      .replace(/[^\w-]+/g, '');
-
-    const postData: any = {
-      slug,
+    const content = await editorRef.current?.save();
+    // NOT: Slug backend tarafında başlığa göre otomatik üretilecek.
+    const payload: any = {
       title,
       summary,
-      content,
       category,
-      imageUrl: imageUrl || null,
+      imageUrl,
+      content,
+      slug: isEdit ? existingPost?.slug : "pending"
     };
 
-    if (category === 'scout' && playerName) {
-      postData.scoutProfile = {
-        playerName,
-        age: parseInt(age) || 0,
-        position,
-        role,
-        strengths: strengths.split(',').map(s => s.trim()).filter(Boolean),
-        risks: risks.split(',').map(s => s.trim()).filter(Boolean),
+    if (category === 'scout' && scoutData.playerName) {
+      payload.scoutProfile = {
+        ...scoutData,
+        age: parseInt(scoutData.age) || 0,
+        strengths: scoutData.strengths.split(',').map(s => s.trim()).filter(Boolean),
+        risks: scoutData.risks.split(',').map(s => s.trim()).filter(Boolean)
       };
     }
 
     try {
-      if (isEdit && postId) {
-        await updatePost.mutateAsync({ id: postId, data: postData });
-      } else {
-        await createPost.mutateAsync(postData);
-      }
+      if (isEdit && postId) await updatePost.mutateAsync({ id: postId, data: payload });
+      else await createPost.mutateAsync(payload);
       onBack();
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (err) { console.error(err); }
   };
 
-  const isPending = createPost.isPending || updatePost.isPending;
-
-  if (isEdit && isLoadingPost) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
+  if (isEdit && isLoadingPost) return <div className="flex justify-center mt-20"><Loader2 className="animate-spin" /></div>;
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-4xl mx-auto px-6 py-12">
-        <button
-          onClick={onBack}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8"
-          data-testid="button-back"
+    <div className="max-w-4xl mx-auto p-8">
+      <div className="flex justify-between items-center mb-6">
+        <Button variant="ghost" onClick={onBack}><ArrowLeft className="w-4 h-4 mr-2" /> Geri Dön</Button>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6 pb-20">
+        <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Yazı Başlığı" className="text-2xl font-bold h-14" required />
+
+        <Select value={category} onValueChange={setCategory}>
+          <SelectTrigger className="w-full h-12 text-base"><SelectValue placeholder="Kategori Seç" /></SelectTrigger>
+          <SelectContent className="bg-white dark:bg-zinc-950 shadow-2xl z-[9999]">
+            <SelectItem value="taktik">Taktik Analiz</SelectItem>
+            <SelectItem value="mac-analizi">Maç Analizi</SelectItem>
+            <SelectItem value="scout">Scout Raporu</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <div
+          className="border-2 border-dashed rounded-xl p-8 text-center hover:border-primary/50 transition-all cursor-pointer bg-muted/20 relative group"
+          onDragOver={(e) => { e.preventDefault(); }}
+          onDrop={(e) => { e.preventDefault(); if (e.dataTransfer.files[0]) handleFileUpload(e.dataTransfer.files[0]); }}
+          onClick={() => document.getElementById('title-upload')?.click()}
         >
-          <ArrowLeft className="w-4 h-4" />
-          {t('admin.editor.back')}
-        </button>
-
-        <h1 className="text-3xl font-serif font-bold text-primary mb-8">
-          {isEdit ? t('admin.editor.editTitle') : t('admin.editor.createTitle')}
-        </h1>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium mb-2">{t('admin.editor.titleLabel')}</label>
-            <Input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder={t('admin.editor.titlePlaceholder')}
-              required
-              data-testid="input-title"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">{t('admin.editor.categoryLabel')}</label>
-            <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger data-testid="select-category">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="scout">{getCategoryLabel(language, 'scout')}</SelectItem>
-                <SelectItem value="taktik">{getCategoryLabel(language, 'taktik')}</SelectItem>
-                <SelectItem value="mac-analizi">{getCategoryLabel(language, 'mac-analizi')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">{t('admin.editor.summaryLabel')}</label>
-            <Textarea
-              value={summary}
-              onChange={(e) => setSummary(e.target.value)}
-              placeholder={t('admin.editor.summaryPlaceholder')}
-              rows={3}
-              required
-              data-testid="input-summary"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">{t('admin.editor.imageLabel')}</label>
-            <Input
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder={t('admin.editor.imagePlaceholder')}
-              data-testid="input-image-url"
-            />
-          </div>
-
-          {category === 'scout' && (
-            <div className="p-6 bg-muted/50 rounded-md space-y-4">
-              <h3 className="font-serif font-bold text-lg">{t('admin.editor.scoutProfile')}</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  value={playerName}
-                  onChange={(e) => setPlayerName(e.target.value)}
-                  placeholder={t('admin.editor.playerName')}
-                  data-testid="input-player-name"
-                />
-                <Input
-                  value={age}
-                  onChange={(e) => setAge(e.target.value)}
-                  placeholder={t('admin.editor.playerAge')}
-                  type="number"
-                  data-testid="input-player-age"
-                />
+          <input type="file" id="title-upload" className="hidden" accept="image/*" onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])} />
+          {imageUrl ? (
+            <div className="relative aspect-[21/9] w-full overflow-hidden rounded-lg shadow-inner">
+              <img src={imageUrl} alt="Kapak" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                <p className="text-white flex items-center font-medium"><Upload className="w-5 h-5 mr-2" /> Değiştir</p>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  value={position}
-                  onChange={(e) => setPosition(e.target.value)}
-                  placeholder={t('admin.editor.playerPosition')}
-                  data-testid="input-player-position"
-                />
-                <Input
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                  placeholder={t('admin.editor.playerRole')}
-                  data-testid="input-player-role"
-                />
-              </div>
-              <Input
-                value={strengths}
-                onChange={(e) => setStrengths(e.target.value)}
-                placeholder={t('admin.editor.playerStrengths')}
-                data-testid="input-player-strengths"
-              />
-              <Input
-                value={risks}
-                onChange={(e) => setRisks(e.target.value)}
-                placeholder={t('admin.editor.playerRisks')}
-                data-testid="input-player-risks"
-              />
+              <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-8 w-8" onClick={(e) => { e.stopPropagation(); setImageUrl(""); }}><X className="w-4 h-4" /></Button>
+            </div>
+          ) : (
+            <div className="py-6">
+              {isUploading ? <Loader2 className="w-10 h-10 animate-spin mx-auto text-primary" /> : (
+                <>
+                  <ImageIcon className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="font-medium text-lg">Kapak Fotoğrafı Yükle</p>
+                  <p className="text-sm text-muted-foreground mt-1">Sürükle bırak veya tıklayarak dosya seç (Önerilen: 1200x500)</p>
+                </>
+              )}
             </div>
           )}
+        </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">{t('admin.editor.contentLabel')}</label>
-            <div
-              ref={editorContainerRef}
-              className="min-h-[400px] border rounded-md p-4 bg-background prose prose-sm max-w-none"
-              data-testid="editor-container"
-            />
+        <Textarea value={summary} onChange={(e) => setSummary(e.target.value)} placeholder="Kısa Özet" rows={3} required className="text-lg py-4" />
+
+        {category === 'scout' && (
+          <div className="bg-muted/30 p-6 rounded-xl border border-primary/10 grid grid-cols-2 gap-4 shadow-sm">
+            <div className="col-span-2 text-sm font-bold text-primary mb-2 border-b pb-2 uppercase tracking-wider">Oyuncu Bilgileri</div>
+            <Input placeholder="Oyuncu Adı" value={scoutData.playerName} onChange={e => setScoutData({ ...scoutData, playerName: e.target.value })} />
+            <Input placeholder="Yaş" type="number" value={scoutData.age} onChange={e => setScoutData({ ...scoutData, age: e.target.value })} />
+            <Input placeholder="Mevki" value={scoutData.position} onChange={e => setScoutData({ ...scoutData, position: e.target.value })} />
+            <Input placeholder="Rol" value={scoutData.role} onChange={e => setScoutData({ ...scoutData, role: e.target.value })} />
+            <Input placeholder="Güçlü Yönler (Virgülle ayır)" value={scoutData.strengths} onChange={e => setScoutData({ ...scoutData, strengths: e.target.value })} className="col-span-2" />
+            <Input placeholder="Zayıf Yönler (Virgülle ayır)" value={scoutData.risks} onChange={e => setScoutData({ ...scoutData, risks: e.target.value })} className="col-span-2" />
           </div>
+        )}
 
-          <div className="flex gap-4 pt-4">
+        <div className="bg-white dark:bg-zinc-950 rounded-xl border p-4 shadow-inner">
+          <div ref={editorContainerRef} className="prose max-w-none min-h-[500px]" />
+        </div>
+
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-4xl px-8 z-[100]">
+          <div className="bg-background/95 backdrop-blur-md p-4 border rounded-2xl shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.2)] flex gap-4">
             <Button
               type="submit"
-              disabled={isPending}
-              className="w-full md:w-auto"
-              data-testid="button-submit"
+              size="lg"
+              className="flex-1 shadow-lg hover:shadow-primary/20 transition-all active:scale-[0.98]"
+              disabled={createPost.isPending || updatePost.isPending}
             >
-              {isPending ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                  {t('admin.editor.saving')}
-                </>
-              ) : isEdit ? t('admin.editor.update') : t('admin.editor.publish')}
+              {(createPost.isPending || updatePost.isPending) && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+              {isEdit ? "Değişiklikleri Kaydet" : "Makaleyi Yayınla"}
             </Button>
             <Button
               type="button"
               variant="outline"
+              size="lg"
+              className="flex-1 bg-background hover:bg-muted"
               onClick={onBack}
-              className="w-full md:w-auto"
             >
-              {t('admin.deleteDialog.cancel')}
+              İptal Et
             </Button>
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   );
 }
