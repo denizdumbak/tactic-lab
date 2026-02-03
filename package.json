@@ -11,7 +11,7 @@
     "start": "NODE_ENV=production node dist/server/index.js",
     "check": "tsc",
     "db:push": "drizzle-kit push",
-    "heroku-postbuild": "npm install --include=dev && npm run build"
+    "heroku-prebuild": "npm install --include=dev"
   },
   "dependencies": {
     "@editorjs/editorjs": "^2.31.1",
