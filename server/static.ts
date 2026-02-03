@@ -39,20 +39,13 @@ export function serveStatic(app: Express) {
 
   app.use(express.static(serveFrom));
 
-  app.get("*", (req, res, next) => {
-    // Skip API routes
-    if (req.path.startsWith("/api")) return next();
-    
-    // Skip asset requests (files with extensions)
-    if (/\.\w+$/.test(req.path)) {
-      return res.status(404).end();
-    }
-
-    // Serve index.html for all other routes (SPA routing)
+  // Serve index.html for all other non-API routes (SPA routing)
+  app.get("*", (req, res) => {
+    if (req.path.startsWith("/api")) return;
     res.sendFile(path.join(serveFrom, "index.html"), (err) => {
       if (err) {
-        console.error(`❌ Failed to serve index.html from ${serveFrom}:`, err.message);
-        res.status(404).send("Frontend build bulunamadı. Lütfen Build Loglarını kontrol edin.");
+        console.error(`❌ Failed to serve index.html:`, err.message);
+        res.status(404).send("Not found");
       }
     });
   });
