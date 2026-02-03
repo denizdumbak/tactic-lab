@@ -12,8 +12,8 @@ export default defineConfig({
   },
   root: path.resolve(process.cwd(), "client"),
   build: {
-    // Output to repo root `dist/public` so the server can always serve it
-    outDir: path.resolve(process.cwd(), "dist", "public"),
+    // Output relative to root — vite resolves this from the `root` option above
+    outDir: "../dist/public",
     emptyOutDir: true,
   },
 });
