@@ -13,7 +13,7 @@ export default defineConfig({
   root: path.resolve(process.cwd(), "client"),
   build: {
     // Çıktıyı tam olarak sunucunun beklediği yere (Ana dizin -> dist -> public) atıyoruz
-    outDir: path.resolve(process.cwd(), "dist", "public"),
+    outDir: "dist/public",
     emptyOutDir: true,
   },
 });
