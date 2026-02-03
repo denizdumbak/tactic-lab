@@ -157,8 +157,15 @@ function PostEditor({ postId, onBack, isEdit }: { postId: number | null, onBack:
   }, []);
 
   useEffect(() => {
-    const timers: NodeJS.Timeout[] = [];
+    // Initialize empty editor on mount for new posts
+    if (!isEdit) {
+      initializeEditor();
+    }
+    return () => { editorRef.current?.destroy(); editorRef.current = null; };
+  }, []);
 
+  useEffect(() => {
+    // Load existing post data and content when editing
     if (isEdit && existingPost) {
       setTitle(existingPost.title);
       setSummary(existingPost.summary);
@@ -174,23 +181,10 @@ function PostEditor({ postId, onBack, isEdit }: { postId: number | null, onBack:
           risks: existingPost.scoutProfile.risks.join(", ")
         });
       }
-      // Delay editor init to ensure DOM is ready
-      const timer = setTimeout(() => {
-        if (editorContainerRef.current) {
-          initializeEditor(existingPost.content);
-        }
-      }, 0);
-      timers.push(timer);
-    } else if (!isEdit) {
-      initializeEditor();
+      // Initialize editor with existing content
+      initializeEditor(existingPost.content);
     }
-
-    return () => {
-      timers.forEach(t => clearTimeout(t));
-      editorRef.current?.destroy();
-      editorRef.current = null;
-    };
-  }, [isEdit, existingPost, initializeEditor]);
+  }, [isEdit, existingPost]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
