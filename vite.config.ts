@@ -12,8 +12,8 @@ export default defineConfig({
   },
   root: path.resolve(process.cwd(), "client"),
   build: {
-    // Output relative to root — vite resolves this from the `root` option above
-    outDir: "../dist/public",
+    // Absolute path to repo root dist/public — works everywhere (local, Koyeb, etc)
+    outDir: path.resolve(process.cwd(), "dist", "public"),
     emptyOutDir: true,
   },
 });
