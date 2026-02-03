@@ -40,8 +40,15 @@ export function serveStatic(app: Express) {
   app.use(express.static(serveFrom));
 
   app.get("*", (req, res, next) => {
+    // Skip API routes
     if (req.path.startsWith("/api")) return next();
+    
+    // Skip asset requests (files with extensions)
+    if (/\.\w+$/.test(req.path)) {
+      return res.status(404).end();
+    }
 
+    // Serve index.html for all other routes (SPA routing)
     res.sendFile(path.join(serveFrom, "index.html"), (err) => {
       if (err) {
         console.error(`❌ Failed to serve index.html from ${serveFrom}:`, err.message);
