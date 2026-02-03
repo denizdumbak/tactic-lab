@@ -157,6 +157,8 @@ function PostEditor({ postId, onBack, isEdit }: { postId: number | null, onBack:
   }, []);
 
   useEffect(() => {
+    const timers: NodeJS.Timeout[] = [];
+
     if (isEdit && existingPost) {
       setTitle(existingPost.title);
       setSummary(existingPost.summary);
@@ -174,13 +176,20 @@ function PostEditor({ postId, onBack, isEdit }: { postId: number | null, onBack:
       }
       // Delay editor init to ensure DOM is ready
       const timer = setTimeout(() => {
-        initializeEditor(existingPost.content);
+        if (editorContainerRef.current) {
+          initializeEditor(existingPost.content);
+        }
       }, 0);
-      return () => clearTimeout(timer);
+      timers.push(timer);
     } else if (!isEdit) {
       initializeEditor();
     }
-    return () => { editorRef.current?.destroy(); editorRef.current = null; };
+
+    return () => {
+      timers.forEach(t => clearTimeout(t));
+      editorRef.current?.destroy();
+      editorRef.current = null;
+    };
   }, [isEdit, existingPost, initializeEditor]);
 
   const handleSubmit = async (e: React.FormEvent) => {
