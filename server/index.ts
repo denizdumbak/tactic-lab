@@ -9,13 +9,11 @@ const httpServer = createServer(app);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Disable CSP in dev mode to allow EditorJS (which uses eval)
-if (process.env.NODE_ENV !== "production") {
-  app.use((req, res, next) => {
-    res.removeHeader("Content-Security-Policy");
-    next();
-  });
-}
+// Disable CSP to allow EditorJS (uses eval) - applied in both dev and production
+app.use((req, res, next) => {
+  res.removeHeader("Content-Security-Policy");
+  next();
+});
 
 async function bootstrap() {
   await registerRoutes(httpServer, app);

@@ -20,6 +20,7 @@ export function serveStatic(app: Express) {
       const stat = fs.statSync(c);
       if (stat && stat.isDirectory()) {
         distPath = c;
+        console.log(`✓ Frontend found at: ${distPath}`);
         break;
       }
     } catch (e) {
@@ -29,12 +30,12 @@ export function serveStatic(app: Express) {
 
   if (!distPath) {
     // No frontend build found; log candidates for debugging and keep existing behavior
-    console.error("Frontend build not found. Checked paths:\n", candidates.join("\n"));
-  } else {
-    console.log("Serving frontend from:", distPath);
+    console.error("❌ Frontend build not found. Checked paths:\n", candidates.join("\n"));
   }
 
   const serveFrom = distPath ?? path.resolve(process.cwd(), "dist", "public");
+  console.log(`📁 Serving static files from: ${serveFrom}`);
+  console.log(`✓ index.html exists: ${fs.existsSync(path.join(serveFrom, "index.html"))}`);
 
   app.use(express.static(serveFrom));
 
@@ -43,6 +44,7 @@ export function serveStatic(app: Express) {
 
     res.sendFile(path.join(serveFrom, "index.html"), (err) => {
       if (err) {
+        console.error(`❌ Failed to serve index.html from ${serveFrom}:`, err.message);
         res.status(404).send("Frontend build bulunamadı. Lütfen Build Loglarını kontrol edin.");
       }
     });
