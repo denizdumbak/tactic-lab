@@ -1,6 +1,7 @@
 import { type Express } from "express";
 import { createServer as createViteServer, createLogger } from "vite";
 import { type Server } from "http";
+// @ts-ignore - vite config is only used in dev environment and may be a TS/ESM module
 import viteConfig from "../vite.config";
 import fs from "fs";
 import path from "path";
