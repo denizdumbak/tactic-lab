@@ -172,7 +172,11 @@ function PostEditor({ postId, onBack, isEdit }: { postId: number | null, onBack:
           risks: existingPost.scoutProfile.risks.join(", ")
         });
       }
-      initializeEditor(existingPost.content);
+      // Delay editor init to ensure DOM is ready
+      const timer = setTimeout(() => {
+        initializeEditor(existingPost.content);
+      }, 0);
+      return () => clearTimeout(timer);
     } else if (!isEdit) {
       initializeEditor();
     }
