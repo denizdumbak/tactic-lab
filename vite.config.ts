@@ -12,8 +12,8 @@ export default defineConfig({
   },
   root: path.resolve(process.cwd(), "client"),
   build: {
-    // Çıktıyı tam olarak sunucunun beklediği yere (Ana dizin -> dist -> public) atıyoruz
-    outDir: "dist/public",
+    // Output to repo root `dist/public` so the server can always serve it
+    outDir: path.resolve(process.cwd(), "dist", "public"),
     emptyOutDir: true,
   },
 });
