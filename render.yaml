@@ -3,7 +3,7 @@ services:
     name: tactic-lab-api
     env: node
     plan: free
-    buildCommand: npm install && npm run build:server
+    buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
@@ -16,8 +16,8 @@ services:
   - type: web
     name: tactic-lab-web
     env: static
-    buildCommand: npm install && npm --prefix client run build
-    staticPublicPath: client/dist/public
+    buildCommand: npm install && npm run build
+    staticPublicPath: dist/public
     routes:
       - path: /api/*
         destination: tactic-lab-api
