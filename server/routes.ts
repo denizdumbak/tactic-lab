@@ -72,6 +72,13 @@ export async function registerRoutes(
     res.json(post);
   });
 
+  app.get("/api/posts/id/:id", async (req, res) => {
+    const id = Number(req.params.id);
+    const post = await storage.getPostById(id);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+    res.json(post);
+  });
+
   app.post(api.posts.create.path, async (req, res) => {
     try {
       const input = api.posts.create.input.parse(req.body);

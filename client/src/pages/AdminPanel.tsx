@@ -105,6 +105,9 @@ function PostEditor({ postId, onBack, isEdit }: { postId: number | null, onBack:
   const createPost = useCreatePost();
   const updatePost = useUpdatePost();
 
+  // Debug: Log post loading state
+  console.log("Edit mode:", isEdit, "Post ID:", postId, "Loading:", isLoadingPost, "Existing post:", existingPost);
+
   const handleFileUpload = async (file: File) => {
     setIsUploading(true);
     const formData = new FormData();
@@ -167,6 +170,7 @@ function PostEditor({ postId, onBack, isEdit }: { postId: number | null, onBack:
   useEffect(() => {
     // Load existing post data and content when editing
     if (isEdit && existingPost) {
+      console.log("Loading existing post:", existingPost);
       setTitle(existingPost.title);
       setSummary(existingPost.summary);
       setCategory(existingPost.category);
@@ -181,10 +185,11 @@ function PostEditor({ postId, onBack, isEdit }: { postId: number | null, onBack:
           risks: existingPost.scoutProfile.risks.join(", ")
         });
       }
+      console.log("Editor content:", existingPost.content);
       // Initialize editor with existing content
       initializeEditor(existingPost.content);
     }
-  }, [isEdit, existingPost]);
+  }, [isEdit, existingPost, initializeEditor]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
