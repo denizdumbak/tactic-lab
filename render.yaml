@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: tactic-lab-api
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build:server
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5001
+      - key: DATABASE_URL
+        sync: false
+
+  - type: web
+    name: tactic-lab-web
+    env: static
+    buildCommand: npm install && npm --prefix client run build
+    staticPublicPath: client/dist/public
+    routes:
+      - path: /api/*
+        destination: tactic-lab-api
