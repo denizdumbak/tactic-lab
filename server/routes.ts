@@ -142,20 +142,18 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     }
   });
 
-  // Resim Yükleme (Gelişmiş Hata Ayıklama Modu)
+  // Resim Yükleme
   app.post('/api/upload', (req, res) => {
     upload.single('image')(req, res, (err) => {
       if (err) {
         console.error("❌ CLOUDINARY/MULTER HATASI:", err);
         return res.status(500).json({ 
           message: "Upload failed at provider", 
-          error: err.message,
-          stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+          error: err.message 
         });
       }
 
       if (!req.file) {
-        console.error("❌ UPLOAD HATASI: Dosya gelmedi.");
         return res.status(400).json({ message: "No file uploaded" });
       }
 
@@ -164,7 +162,6 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         console.log("✅ RESİM BAŞARIYLA BULUTA ÇIKTI:", url);
         res.json({ success: 1, file: { url }, url });
       } catch (e) {
-        console.error("❌ RESPONSE HATASI:", e);
         res.status(500).json({ message: "Error processing upload response" });
       }
     });

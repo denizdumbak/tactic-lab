@@ -6,17 +6,14 @@ import { createServer } from "http";
 const app = express();
 const httpServer = createServer(app);
 
-// Temel middleware'ler
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 (async () => {
   // 1. ÖNCELİK: API Rotaları
-  // registerRoutes içinde tüm /api/... rotaları tanımlandığı için 
-  // istekler statik dosya sunucusuna düşmeden burada cevaplanır.
   await registerRoutes(httpServer, app);
 
-  // 2. SONRA: Statik Dosyalar (Sadece API rotalarıyla eşleşmeyen istekler buraya gelir)
+  // 2. SONRA: Statik Dosyalar (Production) veya Vite (Dev)
   if (process.env.NODE_ENV === "production") {
     serveStatic(app);
   } else {
@@ -24,7 +21,9 @@ app.use(express.urlencoded({ extended: false }));
     await setupVite(httpServer, app);
     
     const port = 5001;
-    httpServer.listen(port, "127.0.0.1");
+    httpServer.listen(port, "127.0.0.1", () => {
+      console.log(`[express] serving on port ${port}`);
+    });
   }
 
   // 3. EN SON: Global Hata Yakalayıcı
