@@ -1,4 +1,4 @@
-import { db } from "./db.js";
+import { db } from "./db";
 import {
   posts,
   scoutProfiles,
@@ -6,7 +6,7 @@ import {
   type ScoutProfile,
   type CreatePostRequest,
   type PostWithProfile
-} from "../shared/schema.js";
+} from "../shared/schema";
 import { eq, desc, sql } from "drizzle-orm";
 
 export interface IStorage {

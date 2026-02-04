@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
-import * as schema from "../shared/schema.js";
+import * as schema from "../shared/schema";
 
 const { Pool } = pg;
 
@@ -11,7 +11,7 @@ if (!process.env.DATABASE_URL) {
 }
 
 // Vercel/Neon için SSL desteği eklendi
-export const pool = new Pool({ 
+export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: true // Neon DB için bu satır hayat kurtarır
 });
