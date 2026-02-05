@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from "fs";
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -39,8 +40,10 @@ async function bootstrap() {
 
   } else {
     // Serve static files from dist/public
-    const path = await import('path');
-    const staticDir = path.join(__dirname, '../public');
+    const staticDir = path.resolve(process.cwd(), "dist/public");
+    if (!fs.existsSync(staticDir)) {
+      console.error(`[server] static dir not found: ${staticDir}`);
+    }
     app.use(express.static(staticDir));
 
     // SPA catch-all: serve index.html for any unmatched route
