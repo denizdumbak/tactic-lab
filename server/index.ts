@@ -1,7 +1,22 @@
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
 import express, { type Request, Response, NextFunction } from "express";
 import { createServer } from "http";
 import { registerRoutes } from "./routes.js";
+import { DatabaseStorage } from "./storage.js";
 import { serveStatic } from "./static.js";
+import { createDbPool, createDb } from "./db.js";
+
+// Initialize DB and storage after dotenv
+const pool = createDbPool();
+const db = createDb(pool);
+const storage = new DatabaseStorage(db);
 
 const app = express();
 const httpServer = createServer(app);
@@ -16,13 +31,22 @@ app.use((req, res, next) => {
 });
 
 async function bootstrap() {
-  await registerRoutes(httpServer, app);
+  await registerRoutes(httpServer, app, storage);
 
   if (process.env.NODE_ENV !== "production") {
     const { setupVite } = await import("./vite.js");
     await setupVite(httpServer, app);
+
   } else {
-    serveStatic(app);
+    // Serve static files from dist/public
+    const path = await import('path');
+    const staticDir = path.join(__dirname, '../public');
+    app.use(express.static(staticDir));
+
+    // SPA catch-all: serve index.html for any unmatched route
+    app.get('*', (req, res) => {
+      res.sendFile(path.join(staticDir, 'index.html'));
+    });
   }
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

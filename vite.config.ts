@@ -1,6 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   plugins: [react()],
@@ -12,8 +16,8 @@ export default defineConfig({
   },
   root: path.resolve(process.cwd(), "client"),
   build: {
-    // Absolute path to repo root dist/public — works everywhere (local, Koyeb, etc)
-    outDir: path.resolve(process.cwd(), "dist", "public"),
+    // Output to ../dist/public relative to client folder
+    outDir: path.resolve(__dirname, "../dist/public"),
     emptyOutDir: true,
   },
 });

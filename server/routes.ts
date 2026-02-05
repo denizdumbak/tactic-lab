@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import type { Server } from "http";
-import { storage } from "./storage.js";
+
 import { api } from "../shared/routes.js";
 import { z } from "zod";
 import multer from "multer";
@@ -56,7 +56,8 @@ function createCleanSlug(title: string) {
 
 export async function registerRoutes(
   _httpServer: Server,
-  app: Express
+  app: Express,
+  storage: any
 ): Promise<Server> {
 
   app.get(api.posts.list.path, async (req, res) => {
