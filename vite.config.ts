@@ -16,8 +16,8 @@ export default defineConfig({
   },
   root: path.resolve(process.cwd(), "client"),
   build: {
-    // Output to ../dist/public relative to client folder
-    outDir: path.resolve(__dirname, "../dist/public"),
+    // Output to dist/public at repo root
+    outDir: path.resolve(process.cwd(), "dist/public"),
     emptyOutDir: true,
   },
 });
